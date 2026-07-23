@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="穿云 ChuanYun 内网穿透平台">
+  <defs>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#EC4899"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#DB2777"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#f7f4ff"/>
+  <radialGradient id="v" cx="12%" cy="-6%" r="52%"><stop offset="0" stop-color="#A78BFA" stop-opacity="0.42"/><stop offset="1" stop-color="#A78BFA" stop-opacity="0"/></radialGradient>
+  <radialGradient id="p" cx="92%" cy="4%" r="52%"><stop offset="0" stop-color="#F472B6" stop-opacity="0.36"/><stop offset="1" stop-color="#F472B6" stop-opacity="0"/></radialGradient>
+  <radialGradient id="b" cx="82%" cy="108%" r="55%"><stop offset="0" stop-color="#7DD3FC" stop-opacity="0.32"/><stop offset="1" stop-color="#7DD3FC" stop-opacity="0"/></radialGradient>
+  <rect width="1200" height="630" fill="url(#v)"/>
+  <rect width="1200" height="630" fill="url(#p)"/>
+  <rect width="1200" height="630" fill="url(#b)"/>
+  <g transform="translate(90,96)">
+    <rect width="66" height="66" rx="16" fill="url(#brand)"/>
+    <path d="M38 10 18 40h13l-3 21 22-33H35z" fill="#fff"/>
+    <text x="86" y="30" fill="#1F1636" font-family="'Segoe UI','PingFang SC',sans-serif" font-size="34" font-weight="700">穿云 ChuanYun</text>
+    <text x="86" y="60" fill="#6D28D9" font-family="'JetBrains Mono',monospace" font-size="17" letter-spacing="4">INTRANET PENETRATION</text>
+  </g>
+  <text x="90" y="322" fill="#1F1636" font-family="'Segoe UI','PingFang SC',sans-serif" font-size="80" font-weight="700">自研内网穿透平台</text>
+  <text x="94" y="410" fill="#544B6E" font-family="'Segoe UI','PingFang SC',sans-serif" font-size="33">兼容 frp 内核 · 没有公网 IP 也能把内网服务安全映射到公网</text>
+  <g font-family="'JetBrains Mono',monospace" font-size="24" font-weight="600" fill="url(#ink)">
+    <text x="94" y="500"># 内网穿透</text>
+    <text x="290" y="500"># 端口映射</text>
+    <text x="486" y="500"># NAT 穿透</text>
+    <text x="682" y="500"># NAS 远程访问</text>
+    <text x="922" y="500"># 远程桌面</text>
+  </g>
+  <text x="90" y="578" fill="#6D28D9" font-family="'JetBrains Mono',monospace" font-size="22">svtun.com</text>
+</svg>

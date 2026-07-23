@@ -1,0 +1,1382 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<!-- ===================== 基础 SEO ===================== -->
+<title>穿云 ChuanYun · 内网穿透平台｜frp/nps 内网映射 · 端口转发 · NAS 与远程桌面公网访问</title>
+<meta name="description" content="穿云 ChuanYun 是自主研发的内网穿透平台，兼容 frp 内核，提供内网映射、端口转发、NAT 穿透与固定公网地址能力。没有公网 IP 也能把本地服务器、NAS、远程桌面、内网网站安全映射到公网访问，一次配置秒级生效，免去 frp、nps、ngrok、花生壳自建的繁琐运维。">
+<meta name="keywords" content="内网穿透,frp,nps,ngrok,花生壳,natapp,cpolar,内网映射,端口映射,端口转发,NAT穿透,内网穿透工具,内网穿透软件,免费内网穿透,内网穿透服务,内网穿透平台,frp内网穿透,nps内网穿透,frpc,frps,没有公网IP,家庭宽带没有公网IP,固定公网地址,内网IP转公网,NAS远程访问,NAS外网访问,群晖内网穿透,飞牛fnOS,威联通QNAP,远程桌面,SSH远程,内网建站,本地网站发布公网,反向代理,DDNS,动态域名解析,游戏联机,隧道,加密隧道,香港CN2节点,穿云,ChuanYun,svtun">
+<meta name="author" content="穿云 ChuanYun">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="bingbot" content="index, follow">
+<meta name="baidu-site-verification" content="">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#F7F4FF">
+<script>
+/* 皮肤调度：白天(07:00-18:59)默认亮色·极光玻璃 / 夜间(19:00-06:59)默认暗色·极夜青绿。
+   手动切换仅在“当前时间段”内记忆，进入下一时间段自动恢复按时间显示。改 NIGHT/DAY 即可调整时段。 */
+(function(){
+  var KEY='svtunSkin', NIGHT=19, DAY=7, root=document.documentElement;
+  function isNight(d){var h=d.getHours();return h>=NIGHT||h<DAY;}
+  function autoT(d){return isNight(d)?'dark':'light';}
+  function periodEnd(d){
+    var e=new Date(d.getFullYear(),d.getMonth(),d.getDate(),0,0,0,0), h=d.getHours();
+    if(h>=DAY&&h<NIGHT){e.setHours(NIGHT);}
+    else if(h>=NIGHT){e.setDate(e.getDate()+1);e.setHours(DAY);}
+    else{e.setHours(DAY);}
+    return e.getTime();
+  }
+  function resolve(){
+    var now=new Date();
+    try{
+      var o=JSON.parse(localStorage.getItem(KEY)||'null');
+      if(o&&o.until&&now.getTime()<o.until&&(o.t==='dark'||o.t==='light'))return o.t;
+      if(o)localStorage.removeItem(KEY);
+    }catch(e){}
+    return autoT(now);
+  }
+  function apply(t){
+    root.setAttribute('data-theme',t);
+    var m=document.querySelector('meta[name="theme-color"]');
+    if(m)m.setAttribute('content', t==='dark'?'#0A1416':'#F7F4FF');
+  }
+  apply(resolve());
+  window.__toggleSkin=function(){
+    var now=new Date(), cur=root.getAttribute('data-theme')||autoT(now), nx=cur==='dark'?'light':'dark';
+    try{localStorage.setItem(KEY, JSON.stringify({t:nx, until:periodEnd(now)}));}catch(e){}
+    apply(nx);
+  };
+})();
+</script>
+<link rel="canonical" href="https://svtun.com/">
+<link rel="alternate" hreflang="zh-CN" href="https://svtun.com/">
+<link rel="alternate" hreflang="x-default" href="https://svtun.com/">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+
+<!-- ===================== 社交分享（Open Graph / Twitter） ===================== -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="穿云 ChuanYun">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:title" content="穿云 ChuanYun · 自研内网穿透平台｜内网映射 · 端口转发 · NAS 远程访问">
+<meta property="og:description" content="兼容 frp 内核的自研内网穿透平台，没有公网 IP 也能把本地服务、NAS、远程桌面安全映射到公网。可替代 frp/nps/ngrok/花生壳自建，一次配置秒级生效。">
+<meta property="og:url" content="https://svtun.com/">
+<meta property="og:image" content="https://svtun.com/og-cover.svg">
+<meta property="og:image:alt" content="穿云 ChuanYun 内网穿透平台">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="穿云 ChuanYun · 自研内网穿透平台">
+<meta name="twitter:description" content="兼容 frp 内核，没有公网 IP 也能把本地服务、NAS、远程桌面安全映射到公网。可替代 frp/nps/ngrok/花生壳自建。">
+<meta name="twitter:image" content="https://svtun.com/og-cover.svg">
+
+<!-- ===================== 图标 ===================== -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%238B5CF6'/%3E%3Cpath d='M35 8 16 37h12l-3 19 21-31H33z' fill='%23ffffff'/%3E%3C/svg%3E" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/favicon.svg">
+
+<!-- ===================== 结构化数据（Schema.org / JSON-LD） ===================== -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "穿云 ChuanYun",
+  "alternateName": "ChuanYun 内网穿透",
+  "applicationCategory": "NetworkApplication",
+  "applicationSubCategory": "内网穿透 / 内网映射 / 端口转发",
+  "operatingSystem": "Windows, Linux, macOS, NAS (飞牛 fnOS / 群晖)",
+  "url": "https://svtun.com/",
+  "description": "自主研发、兼容 frp 内核的内网穿透平台。没有公网 IP 也能把本地服务器、NAS、远程桌面、内网网站安全映射到公网访问，可替代 frp、nps、ngrok、花生壳自建。",
+  "inLanguage": "zh-CN",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+  "featureList": [
+    "内网穿透与内网映射",
+    "TCP/UDP/HTTP/HTTPS/STCP 多协议端口转发",
+    "NAT 穿透与固定公网地址",
+    "NAS 远程访问（飞牛 fnOS / 群晖）",
+    "远程桌面与 SSH 远程运维",
+    "内网建站与自定义域名",
+    "SSL 证书自动签发续期",
+    "全国多线节点智能调度"
+  ],
+  "softwareHelp": "https://svtun.com/#docs"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "穿云 ChuanYun",
+  "url": "https://svtun.com/",
+  "logo": "https://svtun.com/favicon.svg",
+  "email": "support@svtun.com",
+  "description": "自主研发的内网穿透平台，为开发者、运维与个人用户提供安全稳定的内网映射与远程访问能力。"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "穿云 ChuanYun",
+  "url": "https://svtun.com/",
+  "inLanguage": "zh-CN"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "什么是内网穿透？没有公网 IP 也能用吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "内网穿透（又叫内网映射、NAT 穿透）是通过位于公网的中转节点，把没有公网 IP 的本地设备端口安全地映射到一个公网地址上，从而在外网直接访问家里或公司的内网服务。穿云依托全国多线节点搭建加密隧道，即使运营商只分配内网 IP、没有公网 IP，也能稳定地把本地服务发布到公网。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "穿云和 frp、nps、ngrok、花生壳有什么区别？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "穿云兼容 frp 生态，并在其内核之上自研了跨平台守护客户端、智能节点调度与图形化控制台。相比自己用 frp、nps 搭建，无需租服务器、写配置、盯进程；相比 ngrok、花生壳等 SaaS，穿云提供全国多线节点、配置热更新、SSL 自动签发与 NAS 一键接入，中文界面、开箱即用。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "穿云支持哪些系统和设备？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "客户端覆盖 Windows、Linux、macOS，以及飞牛 fnOS、群晖等主流 NAS，可注册为系统服务开机自启。常见场景包括远程桌面、SSH、内网建站、NAS 远程访问、游戏联机与内部接口联调。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "内网穿透安全吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "穿云隧道全程 TLS 加密，按设备签发最小权限、相互隔离的一次性凭证，账户密码加盐哈希存储，并对远程桌面、SSH 等高危端口做实时巡检告警，从传输、凭证到审计层层加固。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "支持哪些协议和端口映射方式？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "支持 TCP、UDP、HTTP、HTTPS、STCP 等多种隧道协议，可用于端口转发、内网建站、点对点安全访问等场景；端口自动分配，支持绑定自定义域名与 SSL 证书自动签发。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "如何开始使用穿云内网穿透？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "进入控制台注册账号，下载对应平台的客户端并登录，设备会自动注册；在控制台创建隧道、选择就近节点，保存后配置秒级下发生效，即可通过公网地址访问你的内网服务。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "内网穿透和 VPN 有什么区别？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "内网穿透和 VPN 是两类不同的技术。VPN 侧重把设备接入一个远程虚拟局域网、改变整体上网出口；内网穿透只是把某个本地服务（如远程桌面、NAS、自建网站）通过公网中转节点定向映射到公网，让外网能访问它，并不改变你的上网出口。穿云是专注内网穿透的平台，帮你把没有公网 IP 的本地服务安全发布到公网，不是 VPN，也不用于访问境外网站。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "没有公网 IP 怎么做内网穿透？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "家庭宽带与多数运营商通常只分配内网 IP、没有独立公网 IP，本地服务无法被外网直接访问。穿云通过部署在公网的多线中转节点建立加密隧道，把你本地的端口映射到一个固定公网地址上，因此即使完全没有公网 IP，也能稳定地从外网访问家里的 NAS、远程桌面或自建网站。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "群晖 / 飞牛 fnOS 等 NAS 如何实现外网访问？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "在 NAS 上安装穿云客户端（支持飞牛 fnOS、群晖、威联通 QNAP 等），登录后设备自动注册；在控制台为 NAS 的管理后台或相册、影音服务创建隧道并选择就近节点，保存后即可用分配的公网地址或自定义域名在任意网络下访问家中 NAS，无需公网 IP，也不必在路由器上做端口映射。"
+      }
+    }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ===== Aurora Frost · 亮色玻璃系统 ===== */
+    --bg:#f7f4ff;
+    --ink:#1F1636;
+    --muted:#5A5070;
+    --faint:#635C7A;
+    --line:rgba(124,92,190,.16);
+    --line-2:rgba(124,92,190,.30);
+
+    --violet:#8B5CF6;
+    --violet-deep:#6D28D9;
+    --pink:#EC4899;
+    --pink-text:#BE185D;
+    --pink-deep:#DB2777;
+    --warm:#E8674A;
+    --ok:#0F766E;
+
+    --glass:rgba(255,255,255,.55);
+    --glass-2:rgba(255,255,255,.64);
+    --glass-strong:rgba(255,255,255,.74);
+    --glass-border:rgba(255,255,255,.66);
+    --card-shadow:0 20px 50px -20px rgba(139,92,246,.30), 0 8px 22px -12px rgba(244,114,182,.20), inset 0 1px 0 rgba(255,255,255,.75);
+    --shadow-glow:0 26px 60px -20px rgba(168,85,247,.42), 0 12px 26px -12px rgba(236,72,153,.30), inset 0 1px 0 rgba(255,255,255,.8);
+    --grad-primary:linear-gradient(118deg,#7C3AED 0%,#9333EA 42%,#DB2777 100%);
+    --grad-brand:linear-gradient(140deg,#8B5CF6,#EC4899);
+    --on-primary:#fff;
+    --on-accent:#fff;
+
+    /* legacy 别名：保证正文内联 var() 仍可用 */
+    --mist:#1F1636;
+    --slate:#635C7A;
+    --slate-2:#5A5070;
+    --teal:#6D28D9;
+    --teal-deep:#6D28D9;
+    --signal:#E8674A;
+
+    --display:"Space Grotesk","PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;
+    --sans:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei","Space Grotesk",sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,"Cascadia Code",Consolas,"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",monospace;
+
+    --maxw:1180px;
+    --r:18px;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;color-scheme:light}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  /* 极光玻璃背景：彩色光斑 + 三色渐变，玻璃卡片浮于其上 */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    background:
+      radial-gradient(1200px 820px at 10% -8%, rgba(167,139,250,.40) 0%, rgba(167,139,250,0) 60%),
+      radial-gradient(1040px 720px at 92% 2%, rgba(244,114,182,.34) 0%, rgba(244,114,182,0) 58%),
+      radial-gradient(1120px 900px at 80% 110%, rgba(125,211,252,.30) 0%, rgba(125,211,252,0) 62%),
+      radial-gradient(900px 700px at 26% 96%, rgba(253,186,178,.24) 0%, rgba(253,186,178,0) 60%),
+      linear-gradient(156deg, #f7f4ff 0%, #fdf2fb 44%, #f0f8ff 100%);
+    pointer-events:none;
+  }
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em;line-height:1.12;color:var(--ink)}
+  p{margin:0}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .mono{font-family:var(--mono)}
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--violet-deep);
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:24px;height:1px;
+    background:linear-gradient(90deg,var(--violet),transparent);
+  }
+
+  /* ---------- 顶栏 ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:saturate(190%) blur(28px);
+    -webkit-backdrop-filter:saturate(190%) blur(28px);
+    background:var(--glass-strong);
+    border-bottom:1px solid var(--line);
+    box-shadow:0 8px 30px -18px rgba(139,92,246,.28);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:66px;gap:16px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:600;letter-spacing:.01em}
+  .glyph{
+    width:30px;height:30px;border-radius:9px;
+    background:var(--grad-brand);
+    position:relative;flex:0 0 auto;
+    box-shadow:0 0 0 1px rgba(139,92,246,.25), 0 10px 24px -10px rgba(168,85,247,.7);
+  }
+  .glyph::before,.glyph::after{
+    content:"";position:absolute;background:var(--on-accent);border-radius:2px;
+  }
+  .glyph::before{left:8px;right:8px;top:13.5px;height:3px;transform:rotate(-32deg)}
+  .glyph::after{left:13.5px;top:8px;bottom:8px;width:3px;transform:rotate(-32deg)}
+  .brand b{font-family:var(--display);font-size:18px;color:var(--ink)}
+  .brand span{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.16em}
+  .menu{display:flex;gap:28px;font-size:14.5px;color:var(--muted)}
+  .menu a{transition:color .2s}
+  .menu a:hover{color:var(--violet-deep)}
+  .nav-actions{display:flex;align-items:center;gap:14px;flex:0 0 auto}
+  .nav-tag{
+    font-family:var(--mono);font-size:12px;color:var(--violet-deep);
+    border:1px solid var(--line-2);border-radius:999px;padding:7px 14px;background:var(--glass);
+    display:inline-flex;align-items:center;gap:7px;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(15,118,110,.6);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(15,118,110,.5)}70%{box-shadow:0 0 0 8px rgba(15,118,110,0)}100%{box-shadow:0 0 0 0 rgba(15,118,110,0)}}
+  /* 控制台按钮（引流核心） */
+  .btn-console{
+    font-family:var(--sans);font-size:14px;font-weight:600;
+    padding:9px 18px;border-radius:10px;
+    background:var(--grad-primary);color:var(--on-primary);text-shadow:0 1px 1px rgba(60,10,50,.28);
+    display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
+    box-shadow:0 12px 26px -12px rgba(168,85,247,.75);
+    transition:transform .18s, box-shadow .25s;
+  }
+  .btn-console:hover{transform:translateY(-1px);box-shadow:0 18px 36px -12px rgba(236,72,153,.7)}
+  .btn-console svg{width:15px;height:15px}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:84px 0 64px;position:relative}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:54px;align-items:center}
+  .hero h1{
+    font-family:var(--display);
+    font-size:clamp(42px,6.4vw,76px);
+    letter-spacing:-.02em;margin:22px 0 0;
+  }
+  .hero h1 .cn{display:block;color:var(--ink)}
+  .hero h1 .en{
+    display:block;font-size:.42em;letter-spacing:.18em;font-weight:600;
+    color:var(--violet-deep);margin-top:10px;
+  }
+  .hero .lede{
+    margin-top:24px;max-width:560px;
+    color:var(--muted);font-size:17px;line-height:1.75;
+  }
+  .hero .lede b{color:var(--ink);font-weight:600}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+  .btn{
+    font-family:var(--sans);font-size:15px;font-weight:600;
+    padding:13px 24px;border-radius:11px;cursor:pointer;border:1px solid transparent;
+    transition:transform .18s, box-shadow .25s, background .2s, border-color .2s;
+    display:inline-flex;align-items:center;gap:9px;
+  }
+  .btn-primary{background:var(--grad-primary);color:var(--on-primary);text-shadow:0 1px 1px rgba(60,10,50,.30);box-shadow:var(--shadow-glow)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 30px 60px -18px rgba(236,72,153,.55),0 12px 26px -10px rgba(168,85,247,.5)}
+  .btn-ghost{border-color:var(--line-2);color:var(--violet-deep);background:var(--glass)}
+  .btn-ghost:hover{border-color:var(--violet);color:var(--violet-deep);background:var(--glass-2)}
+  .btn svg{width:16px;height:16px}
+  .hero-kw{margin-top:20px;display:flex;flex-wrap:wrap;gap:8px}
+  .hero-kw span{font-family:var(--mono);font-size:11.5px;color:var(--violet-deep);border:1px solid var(--line-2);border-radius:7px;padding:4px 10px;background:var(--glass)}
+
+  /* 签名元素：穿云链路 */
+  .link-panel{
+    background:var(--glass);
+    backdrop-filter:blur(22px) saturate(180%);
+    -webkit-backdrop-filter:blur(22px) saturate(180%);
+    border:1px solid var(--glass-border);border-radius:22px;padding:26px 24px 22px;
+    position:relative;overflow:hidden;
+    box-shadow:var(--card-shadow);
+  }
+  .link-panel::before{
+    content:"";position:absolute;left:0;right:0;top:0;height:44%;z-index:0;
+    background:linear-gradient(180deg,rgba(255,255,255,.85) 0%,rgba(255,255,255,.12) 42%,rgba(255,255,255,0) 72%);
+    pointer-events:none;
+  }
+  .link-panel::after{
+    content:"";position:absolute;inset:0;border-radius:22px;padding:1px;
+    background:conic-gradient(from 210deg, rgba(180,140,255,.55), rgba(236,72,153,.45), rgba(253,186,178,.42), rgba(125,211,252,.45), rgba(180,140,255,.55));
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;
+    pointer-events:none;
+  }
+  .link-panel .lp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;position:relative;z-index:2}
+  .lp-title{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--faint)}
+  .lp-live{font-family:var(--mono);font-size:11px;color:var(--ok);display:inline-flex;align-items:center;gap:7px}
+  .chain{position:relative}
+  .node{
+    display:flex;align-items:center;gap:16px;padding:15px 16px;
+    background:rgba(255,255,255,.62);border:1px solid var(--glass-border);border-radius:14px;
+    box-shadow:0 8px 20px -14px rgba(139,92,246,.4);
+    position:relative;z-index:2;
+  }
+  .node + .node{margin-top:34px}
+  .node .ic{
+    width:42px;height:42px;border-radius:11px;flex:0 0 auto;
+    display:grid;place-items:center;color:var(--violet-deep);
+    background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.28);
+  }
+  .node.mid .ic{color:var(--warm);background:rgba(232,103,74,.12);border-color:rgba(232,103,74,.30)}
+  .node .ic svg{width:21px;height:21px}
+  .node .nlabel{font-size:13px;color:var(--muted);font-weight:600}
+  .node .naddr{font-family:var(--mono);font-size:13.5px;color:var(--ink);margin-top:3px}
+  .node .ntag{margin-left:auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--faint);text-align:right}
+  .node .ntag .ok{color:var(--ok)}
+  /* 连线 */
+  .conn{position:absolute;left:36px;width:2px;z-index:1;background:var(--line-2)}
+  .conn::after{
+    content:"";position:absolute;left:-1px;top:0;width:4px;height:22px;border-radius:4px;
+    background:linear-gradient(180deg,var(--violet),transparent);
+    filter:drop-shadow(0 0 6px var(--violet));
+    animation:flow 2.2s linear infinite;
+  }
+  .conn.c1{top:72px;height:34px}
+  .conn.c2{top:178px;height:34px}
+  .conn.c2::after{background:linear-gradient(180deg,var(--pink),transparent);filter:drop-shadow(0 0 6px var(--pink));animation-delay:.5s}
+  @keyframes flow{0%{transform:translateY(-6px);opacity:0}30%{opacity:1}100%{transform:translateY(34px);opacity:0}}
+  .lp-foot{
+    margin-top:22px;padding-top:16px;border-top:1px solid var(--line);position:relative;z-index:2;
+    display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:var(--faint);
+  }
+  .lp-foot .ok{color:var(--ok)}
+
+  /* ---------- 指标条 ---------- */
+  .metrics{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--glass);backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%)}
+  .metric-grid{display:grid;grid-template-columns:repeat(5,1fr)}
+  .metric{padding:28px 22px;text-align:center;border-right:1px solid var(--line)}
+  .metric:last-child{border-right:none}
+  .metric .v{font-family:var(--display);font-size:30px;font-weight:600;color:var(--violet-deep);letter-spacing:-.02em}
+  .metric .v small{font-size:15px;color:var(--pink-text);font-weight:600}
+  .metric .k{font-size:12.5px;color:var(--faint);margin-top:6px;letter-spacing:.02em}
+
+  /* ---------- 通用区块 ---------- */
+  section.block{padding:96px 0}
+  .sec-head{max-width:720px;margin-bottom:52px}
+  .sec-head h2{font-family:var(--display);font-size:clamp(28px,3.6vw,40px);margin-top:16px;letter-spacing:-.02em}
+  .sec-head p{margin-top:16px;color:var(--muted);font-size:16.5px;line-height:1.7}
+
+  /* 能力卡片 */
+  .cap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{
+    background:var(--glass);
+    backdrop-filter:blur(20px) saturate(175%);
+    -webkit-backdrop-filter:blur(20px) saturate(175%);
+    border:1px solid var(--glass-border);border-radius:var(--r);padding:26px 24px;
+    transition:transform .22s, border-color .22s, box-shadow .22s;
+    position:relative;overflow:hidden;
+    box-shadow:var(--card-shadow);
+  }
+  .card:hover{transform:translateY(-4px);border-color:rgba(168,85,247,.5);box-shadow:var(--shadow-glow)}
+  .card .cic{
+    width:46px;height:46px;border-radius:12px;display:grid;place-items:center;
+    color:var(--violet-deep);background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.24);margin-bottom:18px;
+  }
+  .card .cic svg{width:23px;height:23px}
+  .card h3{font-size:18px;letter-spacing:0}
+  .card p{margin-top:9px;color:var(--muted);font-size:14.5px;line-height:1.66}
+  .card .ports{margin-top:16px;display:flex;flex-wrap:wrap;gap:7px}
+  .pill{font-family:var(--mono);font-size:11px;color:var(--violet-deep);border:1px solid var(--line-2);border-radius:7px;padding:4px 9px;background:rgba(255,255,255,.5)}
+
+  /* 自研技术 */
+  .rnd{background:rgba(255,255,255,.32);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .rnd-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
+  .pipeline{position:relative;padding-left:8px}
+  .step{display:flex;gap:20px;position:relative;padding-bottom:30px}
+  .step:last-child{padding-bottom:0}
+  .step .marker{
+    flex:0 0 auto;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
+    font-family:var(--mono);font-size:14px;font-weight:600;color:var(--on-accent);
+    background:var(--grad-brand);position:relative;z-index:2;
+    box-shadow:0 10px 22px -10px rgba(168,85,247,.6);
+  }
+  .step:not(:last-child)::before{
+    content:"";position:absolute;left:21px;top:46px;bottom:6px;width:2px;
+    background:linear-gradient(180deg,var(--violet),var(--line));z-index:1;
+  }
+  .step .stxt h3{font-size:16.5px}
+  .step .stxt p{margin-top:6px;color:var(--muted);font-size:14px;line-height:1.62}
+  .step .stxt .api{font-family:var(--mono);font-size:11.5px;color:var(--violet-deep);margin-top:8px;display:inline-block}
+
+  .rnd-points{display:grid;gap:14px}
+  .rpoint{
+    background:var(--glass);
+    backdrop-filter:blur(20px) saturate(175%);
+    -webkit-backdrop-filter:blur(20px) saturate(175%);
+    border:1px solid var(--glass-border);border-radius:14px;padding:20px 22px;
+    box-shadow:var(--card-shadow);
+  }
+  .rpoint .rh{display:flex;align-items:center;gap:12px}
+  .rpoint .rh .ric{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:var(--pink-deep);background:rgba(236,72,153,.12);border:1px solid rgba(236,72,153,.26)}
+  .rpoint .rh .ric svg{width:18px;height:18px}
+  .rpoint h3{font-size:16px}
+  .rpoint p{margin-top:10px;color:var(--muted);font-size:14px;line-height:1.66}
+
+  /* 网络节点 */
+  .net-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .nodecard{
+    background:var(--glass);
+    backdrop-filter:blur(20px) saturate(175%);
+    -webkit-backdrop-filter:blur(20px) saturate(175%);
+    border:1px solid var(--glass-border);border-radius:var(--r);padding:20px;
+    box-shadow:var(--card-shadow);
+    transition:transform .2s,border-color .2s,box-shadow .2s;
+  }
+  .nodecard:hover{transform:translateY(-3px);border-color:rgba(168,85,247,.45);box-shadow:var(--shadow-glow)}
+  .nodecard .nc-top{display:flex;align-items:center;justify-content:space-between}
+  .nodecard .city{font-size:16px;font-weight:600}
+  .nodecard .badge{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--violet-deep);border:1px solid rgba(139,92,246,.4);border-radius:6px;padding:3px 7px}
+  .nodecard .badge.cn2{color:var(--pink-text);border-color:rgba(236,72,153,.4)}
+  .nodecard .nc-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:14px}
+  .nodecard .nc-row .lat{color:var(--ink)}
+  .nodecard .meter{height:5px;border-radius:4px;background:var(--line-2);margin-top:12px;overflow:hidden}
+  .nodecard .meter i{display:block;height:100%;border-radius:4px;background:var(--grad-brand)}
+  .nodecard .meter i.warn{background:linear-gradient(90deg,#F59E0B,#E8674A)}
+  .net-note{margin-top:24px;font-family:var(--mono);font-size:12.5px;color:var(--faint);text-align:center}
+
+  /* 功能全景 */
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .feat{
+    border:1px solid var(--glass-border);border-radius:14px;padding:22px 22px;
+    background:var(--glass);
+    backdrop-filter:blur(18px) saturate(170%);
+    -webkit-backdrop-filter:blur(18px) saturate(170%);
+    box-shadow:var(--card-shadow);
+    transition:border-color .2s,background .2s,transform .2s,box-shadow .2s;
+  }
+  .feat:hover{border-color:rgba(168,85,247,.4);background:var(--glass-2);transform:translateY(-3px);box-shadow:var(--shadow-glow)}
+  .feat .fi{color:var(--violet-deep);margin-bottom:13px}
+  .feat .fi svg{width:22px;height:22px}
+  .feat h3{font-size:15.5px}
+  .feat p{margin-top:7px;color:var(--muted);font-size:13.5px;line-height:1.6}
+
+  /* ---------- 知识库 / 文档 ---------- */
+  .docs{border-top:1px solid var(--line)}
+  .doc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:44px}
+  .doc-term{border:1px solid var(--glass-border);border-radius:14px;padding:20px 20px;background:var(--glass);backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);box-shadow:var(--card-shadow)}
+  .doc-term .en{font-family:var(--mono);font-size:11px;color:var(--violet-deep);letter-spacing:.06em}
+  .doc-term h3{font-size:15.5px;margin-top:6px}
+  .doc-term p{margin-top:9px;color:var(--muted);font-size:13.5px;line-height:1.62}
+
+  .sub-head{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--violet-deep);margin:0 0 20px}
+  /* 快速上手 */
+  .quickstart{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:46px}
+  .qs{position:relative;border:1px solid var(--glass-border);border-radius:14px;padding:22px 20px;background:var(--glass);backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);box-shadow:var(--card-shadow)}
+  .qs .num{font-family:var(--mono);font-size:13px;color:var(--on-accent);background:var(--grad-brand);width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-weight:600;box-shadow:0 8px 18px -8px rgba(168,85,247,.6)}
+  .qs h3{font-size:15.5px;margin-top:14px}
+  .qs p{margin-top:8px;color:var(--muted);font-size:13.5px;line-height:1.6}
+
+  /* 对比表 */
+  .cmp-wrap{overflow-x:auto;border:1px solid var(--glass-border);border-radius:16px;background:var(--glass-strong);backdrop-filter:blur(20px) saturate(175%);-webkit-backdrop-filter:blur(20px) saturate(175%);box-shadow:var(--card-shadow);-webkit-overflow-scrolling:touch}
+  table.cmp{width:100%;border-collapse:collapse;min-width:680px;font-size:13.8px}
+  table.cmp th,table.cmp td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  table.cmp thead th{font-family:var(--mono);font-size:12px;letter-spacing:.03em;color:var(--muted);background:rgba(255,255,255,.5);font-weight:500}
+  table.cmp thead th.hl{color:var(--violet-deep)}
+  table.cmp td:first-child,table.cmp th:first-child{color:var(--ink);font-weight:600}
+  table.cmp td.hl{color:var(--ink);background:linear-gradient(180deg,rgba(139,92,246,.09),rgba(236,72,153,.06))}
+  table.cmp tbody tr:last-child td{border-bottom:none}
+  table.cmp .yes{color:var(--ok);font-weight:600}
+  .cmp-note{margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+
+  /* ---------- FAQ ---------- */
+  .faq{background:rgba(255,255,255,.32);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .faq-list{display:grid;gap:12px;max-width:900px}
+  details.qa{border:1px solid var(--glass-border);border-radius:14px;background:var(--glass);backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);box-shadow:var(--card-shadow);overflow:hidden}
+  details.qa summary{cursor:pointer;list-style:none;padding:20px 22px;font-size:16px;font-weight:600;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:16px;transition:color .2s}
+  details.qa summary::-webkit-details-marker{display:none}
+  details.qa summary::after{content:"+";font-family:var(--mono);color:var(--pink-text);font-size:22px;line-height:1;flex:0 0 auto;transition:transform .2s}
+  details.qa[open]{box-shadow:var(--card-shadow),inset 3px 0 0 0 var(--pink-deep)}
+  details.qa[open] summary{color:var(--violet-deep)}
+  details.qa[open] summary::after{content:"\2212";color:var(--violet-deep)}
+  details.qa .a{padding:0 22px 20px;color:var(--muted);font-size:14.5px;line-height:1.74}
+
+  /* 安全 */
+  .security{background:rgba(255,255,255,.32);border-top:1px solid var(--line)}
+  .sec-list{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 40px;margin-top:8px}
+  .sitem{display:flex;gap:16px;padding:18px 0;border-bottom:1px solid var(--line)}
+  .sitem .schk{
+    flex:0 0 auto;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
+    color:var(--violet-deep);background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.24);
+  }
+  .sitem .schk svg{width:17px;height:17px}
+  .sitem h3{font-size:15.5px}
+  .sitem p{margin-top:5px;color:var(--muted);font-size:13.5px;line-height:1.6}
+
+  /* 收束区 */
+  .closing{text-align:center;padding:104px 0}
+  .closing h2{font-family:var(--display);font-size:clamp(30px,4.4vw,50px);letter-spacing:-.02em;max-width:760px;margin:18px auto 0}
+  .closing p{margin:20px auto 0;max-width:560px;color:var(--muted);font-size:16.5px}
+  .closing .hero-cta{justify-content:center}
+
+  /* 页脚 */
+  footer{border-top:1px solid var(--line);background:var(--glass-strong);backdrop-filter:blur(20px) saturate(175%);-webkit-backdrop-filter:blur(20px) saturate(175%);padding:54px 0 30px}
+  .foot-top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;padding-bottom:34px;border-bottom:1px solid var(--line)}
+  .foot-brand{max-width:340px}
+  .foot-brand p{margin-top:14px;color:var(--muted);font-size:14px;line-height:1.7}
+  .foot-cols{display:flex;gap:64px;flex-wrap:wrap}
+  .fcol h4{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:0 0 16px}
+  .fcol ul{list-style:none;margin:0;padding:0;display:grid;gap:11px}
+  .fcol li{color:var(--muted);font-size:14px}
+  .fcol li a{transition:color .2s}
+  .fcol li a:hover{color:var(--violet-deep)}
+  .foot-seo{margin-top:26px;padding-top:22px;border-top:1px solid var(--line);color:var(--faint);font-size:12.5px;line-height:1.9}
+  .foot-seo b{color:var(--muted);font-weight:600}
+  .foot-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;padding-top:22px;color:var(--faint);font-size:13px}
+
+  /* 无障碍：仅供屏幕阅读器/搜索引擎的隐藏文本 */
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+  /* 进入动画 */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease, transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ---------- 响应式 ---------- */
+  @media(max-width:1080px){
+    .menu{gap:20px;font-size:14px}
+  }
+  @media(max-width:980px){
+    .menu{display:none}
+    .hero-grid{grid-template-columns:1fr;gap:42px}
+    .link-panel{max-width:480px}
+    .rnd-grid{grid-template-columns:1fr;gap:40px}
+    .cap-grid,.feat-grid{grid-template-columns:repeat(2,1fr)}
+    .net-grid{grid-template-columns:repeat(2,1fr)}
+    .doc-grid,.quickstart{grid-template-columns:repeat(2,1fr)}
+    .metric-grid{grid-template-columns:repeat(3,1fr)}
+    .metric:nth-child(3){border-right:none}
+    .metric:nth-child(n+4){border-top:1px solid var(--line)}
+  }
+  @media(max-width:640px){
+    .wrap{padding:0 18px}
+    .nav-tag{display:none}
+    section.block{padding:68px 0}
+    .cap-grid,.feat-grid,.net-grid,.sec-list,.doc-grid,.quickstart{grid-template-columns:1fr}
+    .metric-grid{grid-template-columns:repeat(2,1fr)}
+    .metric:nth-child(3){border-right:1px solid var(--line)}
+    .metric:nth-child(2n){border-right:none}
+    .metric:nth-child(n+3){border-top:1px solid var(--line)}
+    .foot-top{flex-direction:column}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none!important;scroll-behavior:auto!important}
+    .reveal{opacity:1;transform:none;transition:none}
+  }
+
+  /* ---------- 皮肤切换按钮 ---------- */
+  .btn-skin{
+    width:38px;height:38px;flex:0 0 auto;display:grid;place-items:center;cursor:pointer;
+    border-radius:10px;border:1px solid var(--line-2);background:var(--glass);color:var(--violet-deep);
+    backdrop-filter:blur(10px) saturate(160%);-webkit-backdrop-filter:blur(10px) saturate(160%);
+    transition:transform .18s,border-color .2s,color .2s,background .2s;
+  }
+  .btn-skin:hover{transform:translateY(-1px);border-color:var(--violet)}
+  .btn-skin svg{width:18px;height:18px}
+  .btn-skin .ico-sun{display:none}
+  html[data-theme="dark"] .btn-skin .ico-sun{display:block}
+  html[data-theme="dark"] .btn-skin .ico-moon{display:none}
+
+  /* ===================== 暗色主题 · 极夜青绿（夜间自动 / 手动切换） ===================== */
+  html[data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#0A1416;
+    --ink:#EAF6F3;
+    --muted:#A9C4C3;
+    --faint:#7FA0A2;
+    --line:#1C3A40;
+    --line-2:#1C3A40;
+    --violet:#2BE3C6;
+    --violet-deep:#2BE3C6;
+    --pink:#FF8A5B;
+    --pink-text:#FF8A5B;
+    --pink-deep:#FF8A5B;
+    --warm:#FF8A5B;
+    --ok:#2BE3C6;
+    --glass:linear-gradient(180deg,rgba(18,48,54,.5),rgba(10,20,22,.5));
+    --glass-2:rgba(18,48,54,.72);
+    --glass-strong:rgba(10,20,22,.72);
+    --glass-border:#1C3A40;
+    --card-shadow:0 26px 50px -30px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.04);
+    --shadow-glow:0 26px 50px -28px rgba(43,227,198,.5), inset 0 1px 0 rgba(255,255,255,.05);
+    --grad-primary:linear-gradient(140deg,#2BE3C6,#13B59C);
+    --grad-brand:linear-gradient(150deg,#2BE3C6,#13B59C);
+    --on-primary:#04201c;
+    --on-accent:#0A1416;
+    --mist:#EAF6F3;--slate:#7FA0A2;--slate-2:#A9C4C3;--teal:#2BE3C6;--teal-deep:#13B59C;--signal:#FF8A5B;
+  }
+  html[data-theme="dark"] body::before{
+    background:
+      radial-gradient(900px 520px at 78% -8%, rgba(43,227,198,.16), transparent 60%),
+      radial-gradient(700px 480px at 6% 4%, rgba(255,138,91,.07), transparent 55%),
+      radial-gradient(1200px 800px at 50% 120%, rgba(19,181,156,.10), transparent 60%);
+  }
+  html[data-theme="dark"] header{box-shadow:0 8px 30px -18px rgba(0,0,0,.6)}
+  html[data-theme="dark"] .glyph{box-shadow:0 0 0 1px rgba(43,227,198,.25),0 8px 24px -10px rgba(43,227,198,.7)}
+  html[data-theme="dark"] .btn-console{box-shadow:0 10px 26px -14px rgba(43,227,198,.85)}
+  html[data-theme="dark"] .btn-console:hover{box-shadow:0 16px 34px -14px rgba(43,227,198,1)}
+  html[data-theme="dark"] .btn-primary:hover{box-shadow:0 22px 46px -16px rgba(43,227,198,.9)}
+  html[data-theme="dark"] .link-panel::before{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,0) 60%)}
+  html[data-theme="dark"] .node{background:rgba(10,20,22,.65);box-shadow:none}
+  html[data-theme="dark"] .node .ic,
+  html[data-theme="dark"] .card .cic,
+  html[data-theme="dark"] .sitem .schk{background:rgba(43,227,198,.08);border-color:rgba(43,227,198,.22)}
+  html[data-theme="dark"] .node.mid .ic{background:rgba(255,138,91,.08);border-color:rgba(255,138,91,.28)}
+  html[data-theme="dark"] .rpoint .ric{background:rgba(255,138,91,.08);border-color:rgba(255,138,91,.22)}
+  html[data-theme="dark"] .pill{background:rgba(255,255,255,.04)}
+  html[data-theme="dark"] .nodecard .badge{border-color:rgba(43,227,198,.3)}
+  html[data-theme="dark"] .nodecard .badge.cn2{border-color:rgba(255,138,91,.35)}
+  html[data-theme="dark"] .step .marker{box-shadow:0 10px 22px -12px rgba(43,227,198,.55)}
+  html[data-theme="dark"] .qs .num{box-shadow:0 8px 18px -10px rgba(43,227,198,.55)}
+  html[data-theme="dark"] .rnd,
+  html[data-theme="dark"] .faq,
+  html[data-theme="dark"] .security{background:rgba(14,30,34,.34)}
+  html[data-theme="dark"] table.cmp thead th{background:rgba(14,30,34,.55)}
+  html[data-theme="dark"] table.cmp td.hl{background:rgba(43,227,198,.05)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="/" aria-label="穿云 ChuanYun 首页">
+      <span class="glyph" aria-hidden="true"></span>
+      <span style="display:flex;flex-direction:column;line-height:1.1">
+        <b>穿云 ChuanYun</b>
+        <span>INTRANET&nbsp;PENETRATION</span>
+      </span>
+    </a>
+    <nav class="menu" aria-label="主导航">
+      <a href="#capabilities">应用场景</a>
+      <a href="#rnd">自研技术</a>
+      <a href="#network">节点网络</a>
+      <a href="#features">平台功能</a>
+      <a href="#docs">使用文档</a>
+      <a href="#faq">常见问题</a>
+    </nav>
+    <div class="nav-actions">
+      <span class="nav-tag"><span class="dot"></span>全国节点运行中</span>
+      <button class="btn-skin" type="button" aria-label="切换深色 / 浅色皮肤" title="一键切换皮肤" onclick="__toggleSkin()">
+        <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <a href="https://x.svtun.cn" class="btn-console" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3M7 9l3 2-3 2M13 13h4"/></svg>
+        控制台
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="reveal">
+        <span class="eyebrow">自研内网穿透平台 · 兼容 frp 内核</span>
+        <h1>
+          <span class="cn">让内网服务<br>安全抵达公网</span>
+          <span class="en">CHUANYUN&nbsp;·&nbsp;SECURE&nbsp;TUNNELING</span>
+        </h1>
+        <p class="lede">
+          穿云是一款<b>自主研发的内网穿透平台</b>，依托自研客户端与全国多线节点，把本地服务器、NAS 与内网应用，
+          通过<b>加密隧道</b>稳定映射到公网访问。<b>没有公网 IP 也能用</b>，一次配置、秒级生效，
+          省去 frp、nps、ngrok、花生壳自建的繁琐运维。
+        </p>
+        <div class="hero-cta">
+          <a href="https://x.svtun.cn" class="btn btn-primary" rel="noopener">
+            进入控制台 · 免费开始
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="#docs" class="btn btn-ghost">查看使用文档</a>
+        </div>
+        <div class="hero-kw" aria-hidden="true">
+          <span># 内网穿透</span><span># 端口映射</span><span># NAT 穿透</span>
+          <span># NAS 远程访问</span><span># 远程桌面</span><span># 内网建站</span>
+        </div>
+      </div>
+
+      <!-- 签名元素：穿云链路 -->
+      <div class="reveal">
+        <div class="link-panel" aria-label="穿云内网穿透链路示意">
+          <div class="lp-head">
+            <span class="lp-title">TUNNEL&nbsp;LINK</span>
+            <span class="lp-live"><span class="dot"></span>转发中</span>
+          </div>
+          <div class="chain">
+            <div class="conn c1" aria-hidden="true"></div>
+            <div class="conn c2" aria-hidden="true"></div>
+
+            <div class="node">
+              <span class="ic" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+              </span>
+              <div>
+                <div class="nlabel">内网设备 · 本地服务</div>
+                <div class="naddr">127.0.0.1:3389</div>
+              </div>
+              <div class="ntag">家里NAS<br><span class="ok">● 在线</span></div>
+            </div>
+
+            <div class="node mid">
+              <span class="ic" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="5"/><path d="M12 9.5v5M9.5 12h5"/></svg>
+              </span>
+              <div>
+                <div class="nlabel">穿云节点 · 加密隧道</div>
+                <div class="naddr">北京2【BGP】· TLS</div>
+              </div>
+              <div class="ntag">延迟 11ms<br><span class="ok">● 负载低</span></div>
+            </div>
+
+            <div class="node">
+              <span class="ic" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18"/></svg>
+              </span>
+              <div>
+                <div class="nlabel">公网访问 · 域名直达</div>
+                <div class="naddr">bj.svtun.com:56001</div>
+              </div>
+              <div class="ntag">HTTPS<br><span class="ok">● 已签发</span></div>
+            </div>
+          </div>
+          <div class="lp-foot">
+            <span>frpc&nbsp;0.60.0&nbsp;内核</span>
+            <span>心跳 15s · <span class="ok">配置已生效</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 指标条 -->
+  <section class="metrics" aria-label="平台运行指标">
+    <div class="wrap">
+      <div class="metric-grid reveal">
+        <div class="metric"><div class="v">12<small>+</small></div><div class="k">全国多线节点</div></div>
+        <div class="metric"><div class="v">11<small>ms</small></div><div class="k">最低接入延迟</div></div>
+        <div class="metric"><div class="v">5<small>类</small></div><div class="k">隧道协议支持</div></div>
+        <div class="metric"><div class="v">30<small>s</small></div><div class="k">运行数据刷新</div></div>
+        <div class="metric"><div class="v">24<small>×7</small></div><div class="k">守护自启在线</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 应用场景 / 核心能力 -->
+  <section class="block" id="capabilities">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">应用场景</span>
+        <h2>一条内网穿透隧道，连接你需要的一切</h2>
+        <p>无论是远程办公、私有建站，还是 NAS 与内网设备的远程访问，穿云都能用同一套客户端与节点网络，把内网服务稳定地交付到公网。内网穿透、端口映射、NAT 穿透，一个平台全部搞定。</p>
+      </div>
+      <div class="cap-grid">
+        <div class="card reveal">
+          <span class="cic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+          <h3>远程桌面与 SSH</h3>
+          <p>在外随时连回家中或公司的电脑、服务器，远程桌面、SSH 运维一气呵成，低延迟稳定不掉线。</p>
+          <div class="ports"><span class="pill">TCP</span><span class="pill">RDP 3389</span><span class="pill">SSH 22</span></div>
+        </div>
+        <div class="card reveal">
+          <span class="cic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 9h18M3 15h18M12 3v18"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg></span>
+          <h3>内网建站</h3>
+          <p>把本地运行的网站、后台或接口绑定专属子域名对外发布，支持 HTTP/HTTPS 与自动签发证书。</p>
+          <div class="ports"><span class="pill">HTTP</span><span class="pill">HTTPS</span><span class="pill">自定义域名</span></div>
+        </div>
+        <div class="card reveal">
+          <span class="cic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h.01M7 12h.01M7 16h.01M11 8h6M11 12h6M11 16h6"/></svg></span>
+          <h3>NAS 远程访问</h3>
+          <p>飞牛 fnOS、群晖等 NAS 一键接入，在任何网络环境下访问家中存储与私有云相册、影音库。</p>
+          <div class="ports"><span class="pill">飞牛 fnOS</span><span class="pill">群晖</span><span class="pill">私有云</span></div>
+        </div>
+        <div class="card reveal">
+          <span class="cic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 12h4M8 10v4"/><circle cx="15" cy="11" r="1"/><circle cx="18" cy="13" r="1"/><rect x="2" y="6" width="20" height="12" rx="4"/></svg></span>
+          <h3>游戏联机与语音</h3>
+          <p>UDP 隧道为联机游戏、语音、DNS 等低延迟场景而生，和好友开服联机更顺滑。</p>
+          <div class="ports"><span class="pill">UDP</span><span class="pill">联机开服</span><span class="pill">语音</span></div>
+        </div>
+        <div class="card reveal">
+          <span class="cic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
+          <h3>点对点安全隧道</h3>
+          <p>STCP 点对点模式不暴露公网端口，访问者凭密钥连接，敏感服务也能安心远程使用。</p>
+          <div class="ports"><span class="pill">STCP</span><span class="pill">密钥访问</span><span class="pill">零公网端口</span></div>
+        </div>
+        <div class="card reveal">
+          <span class="cic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 19V5M4 19h16M8 16v-5M12 16V8M16 16v-7M20 16v-3"/></svg></span>
+          <h3>内网应用与接口</h3>
+          <p>开发联调、内部系统、自建服务，按端口灵活映射，团队随时随地访问内网资源。</p>
+          <div class="ports"><span class="pill">端口映射</span><span class="pill">自动分配</span><span class="pill">访问鉴权</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 自研技术 -->
+  <section class="block rnd" id="rnd">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">自主研发</span>
+        <h2>从客户端到调度后台，全栈自研</h2>
+        <p>穿云的客户端守护进程、节点调度算法、消息驱动通信与管理后台均为团队自主设计研发，链路每一环都可观测、可热更新、可自愈。</p>
+      </div>
+      <div class="rnd-grid">
+        <!-- 左：客户端工作流 -->
+        <div class="pipeline reveal">
+          <div class="step">
+            <span class="marker">01</span>
+            <div class="stxt">
+              <h3>设备自动注册建档</h3>
+              <p>自研客户端 frpembed 采集设备指纹与系统信息，上线即自动注册，按设备建立专属档案。</p>
+              <span class="api">device.register</span>
+            </div>
+          </div>
+          <div class="step">
+            <span class="marker">02</span>
+            <div class="stxt">
+              <h3>配置精准下发</h3>
+              <p>后台渲染好的隧道配置，按设备路由精准推送，只发给目标设备，互不干扰。</p>
+              <span class="api">frpc.config.push</span>
+            </div>
+          </div>
+          <div class="step">
+            <span class="marker">03</span>
+            <div class="stxt">
+              <h3>热更新即时生效</h3>
+              <p>客户端收到新配置自动热加载并重启隧道，全程无需人工操作，改完秒级生效。</p>
+              <span class="api">FrpcConfigUpdate</span>
+            </div>
+          </div>
+          <div class="step">
+            <span class="marker">04</span>
+            <div class="stxt">
+              <h3>心跳保活与自愈</h3>
+              <p>周期心跳维持在线状态，断线自动重连、异常进程自动巡检清理，隧道持续可用。</p>
+              <span class="api">heartbeat · reportZombies</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右：自研要点 -->
+        <div class="rnd-points">
+          <div class="rpoint reveal">
+            <div class="rh">
+              <span class="ric" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6v6H9z"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></svg></span>
+              <h3>自研客户端 frpembed</h3>
+            </div>
+            <p>跨平台守护进程，覆盖 Windows / Linux / macOS / NAS，注册为系统服务实现开机自启，自动下载内核、热更新配置、监管进程存活，崩溃即自动拉起。</p>
+          </div>
+          <div class="rpoint reveal">
+            <div class="rh">
+              <span class="ric" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="7" cy="7" r="1.4" fill="currentColor"/><circle cx="13" cy="12" r="1.4" fill="currentColor"/><circle cx="9" cy="17" r="1.4" fill="currentColor"/></svg></span>
+              <h3>消息驱动通信架构</h3>
+            </div>
+            <p>注册、配置下发、心跳、巡检四条独立队列异步解耦，削峰填谷、可观测可回溯，海量设备并发下依旧稳定有序。</p>
+          </div>
+          <div class="rpoint reveal">
+            <div class="rh">
+              <span class="ric" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v6M12 16v6M2 12h6M16 12h6"/><circle cx="12" cy="12" r="3"/></svg></span>
+              <h3>智能节点调度算法</h3>
+            </div>
+            <p>综合延迟、负载与权重为每位用户实时推荐最优节点，一键选用；运行指标每 30 秒采集刷新，高负载自动预警调度。</p>
+          </div>
+          <div class="rpoint reveal">
+            <div class="rh">
+              <span class="ric" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M7 14h5"/></svg></span>
+              <h3>一体化管理后台</h3>
+            </div>
+            <p>自研控制台与运营后台打通设备、隧道、域名、节点与用量统计，配置免发版即时下发，运行状态尽收眼底。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 节点网络 -->
+  <section class="block" id="network">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">节点网络</span>
+        <h2>全国多线节点，就近接入</h2>
+        <p>覆盖华北、华南、华东、华中、西南及港澳与海外的多线机房，BGP 与 CN2 优质线路智能选路，为长连接与高吞吐场景提供稳定带宽保障。</p>
+      </div>
+      <div class="net-grid">
+        <div class="nodecard reveal">
+          <div class="nc-top"><span class="city">北京2</span><span class="badge">BGP</span></div>
+          <div class="nc-row"><span>延迟</span><span class="lat">11 ms</span></div>
+          <div class="nc-row"><span>负载</span><span>低</span></div>
+          <div class="meter"><i style="width:28%"></i></div>
+        </div>
+        <div class="nodecard reveal">
+          <div class="nc-top"><span class="city">广州</span><span class="badge">BGP</span></div>
+          <div class="nc-row"><span>延迟</span><span class="lat">18 ms</span></div>
+          <div class="nc-row"><span>负载</span><span>中</span></div>
+          <div class="meter"><i style="width:54%"></i></div>
+        </div>
+        <div class="nodecard reveal">
+          <div class="nc-top"><span class="city">上海</span><span class="badge">BGP</span></div>
+          <div class="nc-row"><span>延迟</span><span class="lat">16 ms</span></div>
+          <div class="nc-row"><span>负载</span><span>低</span></div>
+          <div class="meter"><i style="width:35%"></i></div>
+        </div>
+        <div class="nodecard reveal">
+          <div class="nc-top"><span class="city">香港</span><span class="badge cn2">CN2</span></div>
+          <div class="nc-row"><span>延迟</span><span class="lat">42 ms</span></div>
+          <div class="nc-row"><span>负载</span><span>较高</span></div>
+          <div class="meter"><i class="warn" style="width:78%"></i></div>
+        </div>
+        <div class="nodecard reveal">
+          <div class="nc-top"><span class="city">成都</span><span class="badge">BGP</span></div>
+          <div class="nc-row"><span>延迟</span><span class="lat">24 ms</span></div>
+          <div class="nc-row"><span>负载</span><span>低</span></div>
+          <div class="meter"><i style="width:31%"></i></div>
+        </div>
+        <div class="nodecard reveal">
+          <div class="nc-top"><span class="city">武汉</span><span class="badge">三网</span></div>
+          <div class="nc-row"><span>延迟</span><span class="lat">21 ms</span></div>
+          <div class="nc-row"><span>负载</span><span>中</span></div>
+          <div class="meter"><i style="width:48%"></i></div>
+        </div>
+        <div class="nodecard reveal">
+          <div class="nc-top"><span class="city">南京</span><span class="badge">BGP</span></div>
+          <div class="nc-row"><span>延迟</span><span class="lat">17 ms</span></div>
+          <div class="nc-row"><span>负载</span><span>低</span></div>
+          <div class="meter"><i style="width:33%"></i></div>
+        </div>
+        <div class="nodecard reveal">
+          <div class="nc-top"><span class="city">美国·加州</span><span class="badge cn2">CN2</span></div>
+          <div class="nc-row"><span>延迟</span><span class="lat">—</span></div>
+          <div class="nc-row"><span>负载</span><span>海外</span></div>
+          <div class="meter"><i style="width:40%"></i></div>
+        </div>
+      </div>
+      <p class="net-note">// 节点延迟、负载与连接数由平台周期采集，每 30 秒刷新一次（以上为示意数据）</p>
+    </div>
+  </section>
+
+  <!-- 平台功能全景 -->
+  <section class="block rnd" id="features">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">平台功能</span>
+        <h2>开箱即用的完整能力</h2>
+        <p>从设备绑定到隧道配置，从域名证书到用量分析，穿云把内网穿透涉及的全部环节，收拢进一套清晰好用的控制台。</p>
+      </div>
+      <div class="feat-grid">
+        <div class="feat reveal"><div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M9 4v16"/></svg></div><h3>设备集中管理</h3><p>绑定、改名、换节点、解绑一目了然，在线状态、系统与内核版本实时回报。</p></div>
+        <div class="feat reveal"><div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 12h6l2-8 2 16 2-8h6"/></svg></div><h3>隧道可视配置</h3><p>多协议隧道在线编辑，端口自动分配、压缩与加密开关、访问鉴权一应俱全。</p></div>
+        <div class="feat reveal"><div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18"/></svg></div><h3>域名与子域名</h3><p>专属子域名一键解析，支持自定义域名建站，解析状态全程可见。</p></div>
+        <div class="feat reveal"><div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><h3>SSL 自动签发</h3><p>对接 ACME 自动完成域名验证与证书签发，临期自动续期，免人工上传。</p></div>
+        <div class="feat reveal"><div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 19V5M4 19h16M8 16v-6M12 16V7M16 16v-4M20 16v-8"/></svg></div><h3>用量与流量统计</h3><p>上下行流量趋势、实时连接、隧道排行与节点分布，按今日/7天/30天联动查看。</p></div>
+        <div class="feat reveal"><div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4"/><circle cx="12" cy="12" r="3"/></svg></div><h3>智能节点推荐</h3><p>按延迟、负载与权重实时推选最优节点，一键选用，长连接高吞吐更稳。</p></div>
+        <div class="feat reveal"><div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M12 8v4M12 15h.01"/></svg></div><h3>高危端口巡检</h3><p>自动识别远程桌面、SSH 等高危端口暴露，及时提醒并支持安全处置。</p></div>
+        <div class="feat reveal"><div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M12 7v5l3 2"/></svg></div><h3>到期提醒与续期</h3><p>套餐与证书临近到期主动提醒，续期到期日顺延，隧道不中断。</p></div>
+        <div class="feat reveal"><div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div><h3>跨平台一键安装</h3><p>Windows / Linux / macOS / NAS 安装包与脚本，注册后台服务即可上线。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 知识库 / 使用文档（SEO 内容核心） -->
+  <section class="block docs" id="docs">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">使用文档 · 知识库</span>
+        <h2>内网穿透是什么？三分钟看懂并上手</h2>
+        <p>内网穿透（Intranet Penetration），又称内网映射、NAT 穿透、端口映射，是在没有公网 IP 的情况下，把本地内网服务安全发布到公网访问的技术。下面先厘清几个关键名词，再用四步带你完成第一条隧道，并对比 frp、nps、ngrok、花生壳等常见方案。</p>
+      </div>
+
+      <!-- 名词科普 -->
+      <p class="sub-head reveal">核心名词</p>
+      <div class="doc-grid">
+        <div class="doc-term reveal">
+          <div class="en">Intranet Penetration</div>
+          <h3>内网穿透</h3>
+          <p>通过公网中转节点，把内网设备端口映射到公网地址，让外网可以直接访问家里或公司的内网服务。</p>
+        </div>
+        <div class="doc-term reveal">
+          <div class="en">NAT Traversal</div>
+          <h3>NAT 穿透</h3>
+          <p>家宽多为 NAT 内网 IP，没有独立公网 IP。穿透技术借助中转服务器绕过 NAT 限制，建立可从外部访问的通道。</p>
+        </div>
+        <div class="doc-term reveal">
+          <div class="en">Port Forwarding</div>
+          <h3>端口映射 / 端口转发</h3>
+          <p>把公网节点的某个端口，转发到内网设备的指定端口（如 RDP 3389、SSH 22），实现远程直连。</p>
+        </div>
+        <div class="doc-term reveal">
+          <div class="en">frpc Core</div>
+          <h3>frp 内核</h3>
+          <p>frp 是主流开源内网穿透工具，穿云兼容其 frpc 客户端内核，并在其上封装了守护、调度与图形控制台。</p>
+        </div>
+      </div>
+
+      <!-- 快速上手 -->
+      <p class="sub-head reveal">三分钟快速上手</p>
+      <div class="quickstart">
+        <div class="qs reveal">
+          <span class="num">1</span>
+          <h3>注册并进入控制台</h3>
+          <p>打开控制台注册账号，全程中文界面，无需任何服务器与命令行基础。</p>
+        </div>
+        <div class="qs reveal">
+          <span class="num">2</span>
+          <h3>下载安装客户端</h3>
+          <p>按系统选择 Windows / Linux / macOS / NAS 客户端，登录后设备自动注册上线。</p>
+        </div>
+        <div class="qs reveal">
+          <span class="num">3</span>
+          <h3>创建隧道选节点</h3>
+          <p>选择协议（TCP/UDP/HTTP/HTTPS/STCP），填写本地端口，一键选用就近最优节点。</p>
+        </div>
+        <div class="qs reveal">
+          <span class="num">4</span>
+          <h3>公网地址直达</h3>
+          <p>保存后配置秒级下发生效，用分配的公网地址或自定义域名即可访问内网服务。</p>
+        </div>
+      </div>
+
+      <!-- 方案对比 -->
+      <p class="sub-head reveal">穿云 vs frp / nps / ngrok / 花生壳</p>
+      <div class="cmp-wrap reveal">
+        <table class="cmp">
+          <caption class="sr-only">穿云与 frp、nps、ngrok、花生壳等内网穿透方案对比</caption>
+          <thead>
+            <tr>
+              <th scope="col">对比项</th>
+              <th scope="col" class="hl">穿云 ChuanYun</th>
+              <th scope="col">自建 frp / nps</th>
+              <th scope="col">ngrok / 花生壳</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">部署方式</th>
+              <td class="hl">注册即用，免租服务器</td>
+              <td>需自租服务器 + 手动编译配置</td>
+              <td>注册即用（SaaS）</td>
+            </tr>
+            <tr>
+              <th scope="row">客户端</th>
+              <td class="hl">自研跨平台守护，开机自启 / 自愈</td>
+              <td>官方命令行，需自己写配置守进程</td>
+              <td>官方客户端</td>
+            </tr>
+            <tr>
+              <th scope="row">节点线路</th>
+              <td class="hl">全国多线 BGP / CN2 节点</td>
+              <td>取决于你租用的服务器</td>
+              <td>线路固定，国内节点较少</td>
+            </tr>
+            <tr>
+              <th scope="row">配置更新</th>
+              <td class="hl">控制台热更新，秒级生效</td>
+              <td>改配置文件后手动重启</td>
+              <td>面板配置</td>
+            </tr>
+            <tr>
+              <th scope="row">SSL 证书</th>
+              <td class="hl"><span class="yes">自动签发 / 续期</span></td>
+              <td>手动申请与配置</td>
+              <td>部分支持</td>
+            </tr>
+            <tr>
+              <th scope="row">NAS 接入</th>
+              <td class="hl">飞牛 / 群晖一键接入</td>
+              <td>需自行配置</td>
+              <td>需自行配置</td>
+            </tr>
+            <tr>
+              <th scope="row">图形控制台</th>
+              <td class="hl">用量统计 + 安全巡检</td>
+              <td>无（命令行 / 第三方面板）</td>
+              <td>官方面板</td>
+            </tr>
+            <tr>
+              <th scope="row">上手成本</th>
+              <td class="hl"><span class="yes">低 · 中文开箱即用</span></td>
+              <td>高 · 需运维经验</td>
+              <td>低 · 部分英文</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="cmp-note reveal">// 说明：frp、nps 为开源自建方案，ngrok、花生壳为第三方 SaaS。穿云在兼容 frp 生态的基础上，补齐了守护客户端、节点调度、SSL 与图形控制台，降低使用门槛。</p>
+    </div>
+  </section>
+
+  <!-- 常见问题 FAQ（与 FAQPage 结构化数据一致） -->
+  <section class="block faq" id="faq">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">常见问题</span>
+        <h2>关于内网穿透，你可能想问</h2>
+        <p>关于内网穿透、没有公网 IP、frp / nps / ngrok / 花生壳的对比与安全性等高频问题，都在这里。</p>
+      </div>
+      <div class="faq-list">
+        <details class="qa reveal" open>
+          <summary>什么是内网穿透？没有公网 IP 也能用吗？</summary>
+          <div class="a">内网穿透（又叫内网映射、NAT 穿透）是通过位于公网的中转节点，把没有公网 IP 的本地设备端口安全地映射到一个公网地址上，从而在外网直接访问家里或公司的内网服务。穿云依托全国多线节点搭建加密隧道，即使运营商只分配内网 IP、没有公网 IP，也能稳定地把本地服务发布到公网。</div>
+        </details>
+        <details class="qa reveal">
+          <summary>穿云和 frp、nps、ngrok、花生壳有什么区别？</summary>
+          <div class="a">穿云兼容 frp 生态，并在其内核之上自研了跨平台守护客户端、智能节点调度与图形化控制台。相比自己用 frp、nps 搭建，无需租服务器、写配置、盯进程；相比 ngrok、花生壳等 SaaS，穿云提供全国多线节点、配置热更新、SSL 自动签发与 NAS 一键接入，中文界面、开箱即用。</div>
+        </details>
+        <details class="qa reveal">
+          <summary>穿云支持哪些系统和设备？</summary>
+          <div class="a">客户端覆盖 Windows、Linux、macOS，以及飞牛 fnOS、群晖等主流 NAS，可注册为系统服务开机自启。常见场景包括远程桌面、SSH、内网建站、NAS 远程访问、游戏联机与内部接口联调。</div>
+        </details>
+        <details class="qa reveal">
+          <summary>内网穿透安全吗？</summary>
+          <div class="a">穿云隧道全程 TLS 加密，按设备签发最小权限、相互隔离的一次性凭证，账户密码加盐哈希存储，并对远程桌面、SSH 等高危端口做实时巡检告警，从传输、凭证到审计层层加固。</div>
+        </details>
+        <details class="qa reveal">
+          <summary>支持哪些协议和端口映射方式？</summary>
+          <div class="a">支持 TCP、UDP、HTTP、HTTPS、STCP 等多种隧道协议，可用于端口转发、内网建站、点对点安全访问等场景；端口自动分配，支持绑定自定义域名与 SSL 证书自动签发。</div>
+        </details>
+        <details class="qa reveal">
+          <summary>如何开始使用穿云内网穿透？</summary>
+          <div class="a">进入控制台注册账号，下载对应平台的客户端并登录，设备会自动注册；在控制台创建隧道、选择就近节点，保存后配置秒级下发生效，即可通过公网地址访问你的内网服务。<br><a href="https://x.svtun.cn" rel="noopener" style="color:var(--teal);font-weight:600">→ 立即进入控制台</a></div>
+        </details>
+        <details class="qa reveal">
+          <summary>内网穿透和 VPN 有什么区别？</summary>
+          <div class="a">内网穿透和 VPN 是两类不同的技术。VPN 侧重把设备接入一个远程虚拟局域网、改变整体上网出口；内网穿透只是把某个本地服务（如远程桌面、NAS、自建网站）通过公网中转节点定向映射到公网，让外网能访问它，并不改变你的上网出口。穿云是专注内网穿透的平台，帮你把没有公网 IP 的本地服务安全发布到公网，不是 VPN，也不用于访问境外网站。</div>
+        </details>
+        <details class="qa reveal">
+          <summary>没有公网 IP 怎么做内网穿透？</summary>
+          <div class="a">家庭宽带与多数运营商通常只分配内网 IP、没有独立公网 IP，本地服务无法被外网直接访问。穿云通过部署在公网的多线中转节点建立加密隧道，把你本地的端口映射到一个固定公网地址上，因此即使完全没有公网 IP，也能稳定地从外网访问家里的 NAS、远程桌面或自建网站。</div>
+        </details>
+        <details class="qa reveal">
+          <summary>群晖 / 飞牛 fnOS 等 NAS 如何实现外网访问？</summary>
+          <div class="a">在 NAS 上安装穿云客户端（支持飞牛 fnOS、群晖、威联通 QNAP 等），登录后设备自动注册；在控制台为 NAS 的管理后台或相册、影音服务创建隧道并选择就近节点，保存后即可用分配的公网地址或自定义域名在任意网络下访问家中 NAS，无需公网 IP，也不必在路由器上做端口映射。</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 安全保障 -->
+  <section class="block security" id="security">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">安全保障</span>
+        <h2>安全，是隧道的底线</h2>
+        <p>从传输到凭证，从权限到审计，穿云把安全做进架构的每一层，让数据穿过公网也始终在掌控之中。</p>
+      </div>
+      <div class="sec-list">
+        <div class="sitem reveal">
+          <span class="schk" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></span>
+          <div><h3>端到端传输加密</h3><p>隧道全程 TLS 加密通信，支持传输加密与数据压缩开关，链路内容不可窥探。</p></div>
+        </div>
+        <div class="sitem reveal">
+          <span class="schk" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></span>
+          <div><h3>最小权限设备凭证</h3><p>客户端不内置长期凭证，注册后按设备签发一次性、最小权限、相互隔离的访问凭证。</p></div>
+        </div>
+        <div class="sitem reveal">
+          <span class="schk" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></span>
+          <div><h3>密码加盐哈希存储</h3><p>账户密码加盐哈希落库，绝不明文保存；登录态 Token 鉴权，临期自动续期。</p></div>
+        </div>
+        <div class="sitem reveal">
+          <span class="schk" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></span>
+          <div><h3>越权防护与接口限流</h3><p>严格按归属隔离数据，杜绝越权访问；关键接口限流防刷，抵御暴力枚举。</p></div>
+        </div>
+        <div class="sitem reveal">
+          <span class="schk" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></span>
+          <div><h3>高危端口实时巡检</h3><p>全平台周期巡检高危端口暴露，命中即告警，支持安全提醒与处置闭环。</p></div>
+        </div>
+        <div class="sitem reveal">
+          <span class="schk" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></span>
+          <div><h3>操作全程审计留痕</h3><p>敏感操作记录操作人、时间与对象，全程可追溯，运营与合规有据可查。</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 收束 -->
+  <section class="closing">
+    <div class="wrap reveal">
+      <span class="eyebrow" style="justify-content:center">穿云 · ChuanYun</span>
+      <h2>把内网穿透，做成一件省心的事</h2>
+      <p>自研内核、稳定节点、清晰控制台——让每一次远程访问，都简单、安全、稳定。现在就进入控制台，创建你的第一条隧道。</p>
+      <div class="hero-cta">
+        <a href="https://x.svtun.cn" class="btn btn-primary" rel="noopener">
+          进入控制台 · 免费开始
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#capabilities" class="btn btn-ghost">再看看应用场景</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <div class="brand">
+          <span class="glyph" aria-hidden="true"></span>
+          <span style="display:flex;flex-direction:column;line-height:1.1">
+            <b style="font-family:var(--display);font-size:18px">穿云 ChuanYun</b>
+            <span style="font-family:var(--mono);font-size:11px;color:var(--slate);letter-spacing:.16em">INTRANET&nbsp;PENETRATION</span>
+          </span>
+        </div>
+        <p>自主研发的内网穿透平台，依托自研客户端与全国多线节点，为开发者、运维与个人用户提供安全稳定的内网映射与远程访问能力。</p>
+      </div>
+      <div class="foot-cols">
+        <div class="fcol">
+          <h4>产品</h4>
+          <ul>
+            <li><a href="#capabilities">应用场景</a></li>
+            <li><a href="#rnd">自研技术</a></li>
+            <li><a href="#network">节点网络</a></li>
+            <li><a href="#features">平台功能</a></li>
+          </ul>
+        </div>
+        <div class="fcol">
+          <h4>资源</h4>
+          <ul>
+            <li><a href="#docs">使用文档</a></li>
+            <li><a href="#faq">常见问题</a></li>
+            <li><a href="#docs">方案对比</a></li>
+            <li><a href="https://x.svtun.cn" rel="noopener">进入控制台</a></li>
+          </ul>
+        </div>
+        <div class="fcol">
+          <h4>支持</h4>
+          <ul>
+            <li>跨平台客户端</li>
+            <li>Windows / Linux / macOS / NAS</li>
+            <li>常见问题解答</li>
+            <li>客服邮箱：support@svtun.com</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="foot-seo">
+      <b>关键词：</b>内网穿透 · 免费内网穿透 · 内网穿透软件 · frp · nps · ngrok · 花生壳替代 · 内网映射 · 端口映射 · 端口转发 · NAT 穿透 · 没有公网 IP · 家庭宽带没有公网 IP · 固定公网地址 · 内网 IP 转公网 · NAS 远程访问 · NAS 外网访问 · 飞牛 fnOS · 群晖 · 威联通 QNAP · 远程桌面 · SSH 远程运维 · 内网建站 · 本地网站发布公网 · 反向代理 · DDNS 动态域名 · 游戏联机 · 加密隧道 · 香港 CN2 节点 · frpc 内核 · 穿云 ChuanYun。
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 穿云 ChuanYun. 保留所有权利。</span>
+      <span><a href="https://x.svtun.cn" rel="noopener" style="color:var(--slate)">控制台 x.svtun.cn</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // 渐进增强：滚动进入淡入（无 JS 时内容默认可见）
+  (function(){
+    var els = document.querySelectorAll('.reveal');
+    if(!('IntersectionObserver' in window)){
+      els.forEach(function(el){el.classList.add('in')});
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, {threshold:.12, rootMargin:'0px 0px -8% 0px'});
+    els.forEach(function(el){ io.observe(el); });
+  })();
+</script>
+
+</body>
+</html>
