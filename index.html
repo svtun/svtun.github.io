@@ -16,7 +16,7 @@
 <meta name="format-detection" content="telephone=no">
 <meta name="theme-color" content="#F7F4FF">
 <script>
-/* 皮肤调度：白天(07:00-18:59)默认亮色·极光玻璃 / 夜间(19:00-06:59)默认暗色·极夜青绿。
+/* 皮肤调度：白天(07:00-18:59)默认亮色·极光玻璃 / 夜间(19:00-06:59)默认暗色·极夜紫曜。
    手动切换仅在“当前时间段”内记忆，进入下一时间段自动恢复按时间显示。改 NIGHT/DAY 即可调整时段。 */
 (function(){
   var KEY='svtunSkin', NIGHT=19, DAY=7, root=document.documentElement;
@@ -41,7 +41,7 @@
   function apply(t){
     root.setAttribute('data-theme',t);
     var m=document.querySelector('meta[name="theme-color"]');
-    if(m)m.setAttribute('content', t==='dark'?'#0A1416':'#F7F4FF');
+    if(m)m.setAttribute('content', t==='dark'?'#0B0A12':'#F7F4FF');
   }
   apply(resolve());
   window.__toggleSkin=function(){
@@ -282,7 +282,10 @@
       radial-gradient(900px 700px at 26% 96%, rgba(253,186,178,.24) 0%, rgba(253,186,178,0) 60%),
       linear-gradient(156deg, #f7f4ff 0%, #fdf2fb 44%, #f0f8ff 100%);
     pointer-events:none;
+    animation:auroraDrift 26s ease-in-out infinite alternate;
+    will-change:transform;
   }
+  @keyframes auroraDrift{0%{transform:scale(1) translate3d(0,0,0)}100%{transform:scale(1.08) translate3d(-1.4%,1.2%,0)}}
   a{color:inherit;text-decoration:none}
   h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em;line-height:1.12;color:var(--ink)}
   p{margin:0}
@@ -637,6 +640,31 @@
   .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease, transform .7s ease}
   .reveal.in{opacity:1;transform:none}
 
+  /* ===== 动态化 signature 动效：跑马灯 / 隧道数据包 / 吞吐条 ===== */
+  .ticker{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    background:var(--glass);backdrop-filter:blur(12px) saturate(160%);-webkit-backdrop-filter:blur(12px) saturate(160%)}
+  .ticker-track{display:flex;width:max-content;animation:tickerMove 42s linear infinite}
+  .ticker:hover .ticker-track{animation-play-state:paused}
+  .ticker-grp{display:flex;align-items:center;gap:30px;padding:11px 30px 11px 0}
+  .ticker-item{font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;color:var(--faint);
+    display:inline-flex;align-items:center;gap:30px;white-space:nowrap}
+  .ticker-item::after{content:"";width:5px;height:5px;border-radius:50%;background:var(--violet);opacity:.5;flex:0 0 auto}
+  @keyframes tickerMove{to{transform:translateX(-50%)}}
+
+  /* 隧道数据包：沿链路左轨下行流动 */
+  .packets{position:absolute;left:35px;top:0;bottom:0;width:4px;z-index:1;pointer-events:none}
+  .packets i{position:absolute;left:-1px;width:6px;height:6px;border-radius:50%;background:var(--violet);
+    box-shadow:0 0 12px 2px var(--violet);opacity:0;animation:pktRun 2.8s linear infinite}
+  .packets i:nth-child(2){background:var(--pink);box-shadow:0 0 12px 2px var(--pink);animation-delay:.95s}
+  .packets i:nth-child(3){animation-delay:1.8s}
+  @keyframes pktRun{0%{top:2%;opacity:0}10%{opacity:1}88%{opacity:1}100%{top:98%;opacity:0}}
+
+  /* 传输吞吐 equalizer（面板内 live 感） */
+  .lp-traffic{display:flex;align-items:flex-end;gap:3px;height:32px;margin-top:18px;padding:0 2px;position:relative;z-index:2}
+  .lp-traffic i{flex:1;min-width:0;height:20%;border-radius:2px;transform-origin:bottom;opacity:.55;
+    background:linear-gradient(180deg,var(--violet),var(--pink));animation:eq 1.3s ease-in-out infinite alternate}
+  @keyframes eq{0%{height:12%;opacity:.35}100%{height:92%;opacity:.82}}
+
   /* ---------- 响应式 ---------- */
   @media(max-width:1080px){
     .menu{gap:20px;font-size:14px}
@@ -688,64 +716,74 @@
   html[data-theme="dark"] .btn-skin .ico-sun{display:block}
   html[data-theme="dark"] .btn-skin .ico-moon{display:none}
 
-  /* ===================== 暗色主题 · 极夜青绿（夜间自动 / 手动切换） ===================== */
+  /* ===================== 暗色主题 · 极夜紫曜 Aurora Nocturne（夜间自动 / 手动切换） =====================
+     深中性近黑 + 紫色品牌主色，对标 Linear / Vercel / Stripe：冷静克制、高对比、"贵"。
+     基色 #0B0A12（近黑带极轻靛紫底调），品牌 violet→magenta，成功态用 emerald 绿，去除全部青绿/橙。 */
   html[data-theme="dark"]{
     color-scheme:dark;
-    --bg:#0A1416;
-    --ink:#EAF6F3;
-    --muted:#A9C4C3;
-    --faint:#7FA0A2;
-    --line:#1C3A40;
-    --line-2:#1C3A40;
-    --violet:#2BE3C6;
-    --violet-deep:#2BE3C6;
-    --pink:#FF8A5B;
-    --pink-text:#FF8A5B;
-    --pink-deep:#FF8A5B;
-    --warm:#FF8A5B;
-    --ok:#2BE3C6;
-    --glass:linear-gradient(180deg,rgba(18,48,54,.5),rgba(10,20,22,.5));
-    --glass-2:rgba(18,48,54,.72);
-    --glass-strong:rgba(10,20,22,.72);
-    --glass-border:#1C3A40;
-    --card-shadow:0 26px 50px -30px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.04);
-    --shadow-glow:0 26px 50px -28px rgba(43,227,198,.5), inset 0 1px 0 rgba(255,255,255,.05);
-    --grad-primary:linear-gradient(140deg,#2BE3C6,#13B59C);
-    --grad-brand:linear-gradient(150deg,#2BE3C6,#13B59C);
-    --on-primary:#04201c;
-    --on-accent:#0A1416;
-    --mist:#EAF6F3;--slate:#7FA0A2;--slate-2:#A9C4C3;--teal:#2BE3C6;--teal-deep:#13B59C;--signal:#FF8A5B;
+    --bg:#0B0A12;
+    --ink:#EDEBF5;
+    --muted:#A7A2BC;
+    --faint:#847F9B;
+    --line:rgba(167,139,250,.12);
+    --line-2:rgba(167,139,250,.22);
+
+    --violet:#8B5CF6;
+    --violet-deep:#A78BFA;
+    --pink:#EC4899;
+    --pink-text:#F472B6;
+    --pink-deep:#EC4899;
+    --warm:#F472B6;
+    --ok:#34D399;
+
+    --glass:linear-gradient(180deg,rgba(30,26,50,.62),rgba(18,15,33,.62));
+    --glass-2:rgba(36,31,58,.75);
+    --glass-strong:rgba(13,11,26,.82);
+    --glass-border:rgba(167,139,250,.16);
+    --card-shadow:0 22px 46px -30px rgba(0,0,0,.85), 0 4px 14px -8px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.05);
+    --shadow-glow:0 30px 60px -30px rgba(139,92,246,.55), 0 14px 32px -16px rgba(236,72,153,.30), inset 0 1px 0 rgba(255,255,255,.07);
+    --grad-primary:linear-gradient(122deg,#7C3AED 0%,#9333EA 46%,#DB2777 100%);
+    --grad-brand:linear-gradient(140deg,#8B5CF6,#EC4899);
+    --on-primary:#fff;
+    --on-accent:#fff;
+
+    --mist:#EDEBF5;--slate:#847F9B;--slate-2:#A7A2BC;--teal:#A78BFA;--teal-deep:#8B5CF6;--signal:#F472B6;
   }
   html[data-theme="dark"] body::before{
     background:
-      radial-gradient(900px 520px at 78% -8%, rgba(43,227,198,.16), transparent 60%),
-      radial-gradient(700px 480px at 6% 4%, rgba(255,138,91,.07), transparent 55%),
-      radial-gradient(1200px 800px at 50% 120%, rgba(19,181,156,.10), transparent 60%);
+      radial-gradient(1100px 640px at 82% -10%, rgba(139,92,246,.16), transparent 60%),
+      radial-gradient(820px 560px at 4% 2%, rgba(99,102,241,.12), transparent 58%),
+      radial-gradient(1200px 820px at 50% 120%, rgba(236,72,153,.10), transparent 62%),
+      linear-gradient(168deg,#0C0A16 0%,#0A0912 52%,#0B0A14 100%);
   }
-  html[data-theme="dark"] header{box-shadow:0 8px 30px -18px rgba(0,0,0,.6)}
-  html[data-theme="dark"] .glyph{box-shadow:0 0 0 1px rgba(43,227,198,.25),0 8px 24px -10px rgba(43,227,198,.7)}
-  html[data-theme="dark"] .btn-console{box-shadow:0 10px 26px -14px rgba(43,227,198,.85)}
-  html[data-theme="dark"] .btn-console:hover{box-shadow:0 16px 34px -14px rgba(43,227,198,1)}
-  html[data-theme="dark"] .btn-primary:hover{box-shadow:0 22px 46px -16px rgba(43,227,198,.9)}
-  html[data-theme="dark"] .link-panel::before{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,0) 60%)}
-  html[data-theme="dark"] .node{background:rgba(10,20,22,.65);box-shadow:none}
+  html[data-theme="dark"] header{box-shadow:0 8px 30px -18px rgba(0,0,0,.66)}
+  html[data-theme="dark"] .glyph{box-shadow:0 0 0 1px rgba(139,92,246,.35),0 8px 24px -10px rgba(139,92,246,.70)}
+  html[data-theme="dark"] .btn-console{box-shadow:0 10px 26px -14px rgba(139,92,246,.70)}
+  html[data-theme="dark"] .btn-console:hover{box-shadow:0 16px 34px -14px rgba(168,85,247,.90)}
+  html[data-theme="dark"] .btn-primary:hover{box-shadow:0 26px 52px -18px rgba(236,72,153,.50),0 12px 28px -12px rgba(168,85,247,.55)}
+  html[data-theme="dark"] .link-panel::before{background:linear-gradient(180deg,rgba(167,139,250,.08),rgba(255,255,255,0) 62%)}
+  html[data-theme="dark"] .link-panel::after{background:conic-gradient(from 210deg, rgba(167,139,250,.50), rgba(236,72,153,.42), rgba(99,102,241,.42), rgba(167,139,250,.50))}
+  html[data-theme="dark"] .node{background:rgba(24,21,42,.55);box-shadow:none}
   html[data-theme="dark"] .node .ic,
   html[data-theme="dark"] .card .cic,
-  html[data-theme="dark"] .sitem .schk{background:rgba(43,227,198,.08);border-color:rgba(43,227,198,.22)}
-  html[data-theme="dark"] .node.mid .ic{background:rgba(255,138,91,.08);border-color:rgba(255,138,91,.28)}
-  html[data-theme="dark"] .rpoint .ric{background:rgba(255,138,91,.08);border-color:rgba(255,138,91,.22)}
-  html[data-theme="dark"] .pill{background:rgba(255,255,255,.04)}
-  html[data-theme="dark"] .nodecard .badge{border-color:rgba(43,227,198,.3)}
-  html[data-theme="dark"] .nodecard .badge.cn2{border-color:rgba(255,138,91,.35)}
-  html[data-theme="dark"] .step .marker{box-shadow:0 10px 22px -12px rgba(43,227,198,.55)}
-  html[data-theme="dark"] .qs .num{box-shadow:0 8px 18px -10px rgba(43,227,198,.55)}
+  html[data-theme="dark"] .sitem .schk{background:rgba(139,92,246,.14);border-color:rgba(139,92,246,.30)}
+  html[data-theme="dark"] .node.mid .ic{background:rgba(244,114,182,.14);border-color:rgba(244,114,182,.30)}
+  html[data-theme="dark"] .rpoint .ric{background:rgba(244,114,182,.13);border-color:rgba(244,114,182,.26)}
+  html[data-theme="dark"] .pill{background:rgba(167,139,250,.07)}
+  html[data-theme="dark"] .nodecard .badge{border-color:rgba(139,92,246,.34)}
+  html[data-theme="dark"] .nodecard .badge.cn2{border-color:rgba(244,114,182,.38)}
+  html[data-theme="dark"] .nodecard .meter i.warn{background:linear-gradient(90deg,#F59E0B,#FB7185)}
+  html[data-theme="dark"] .step .marker{box-shadow:0 10px 22px -12px rgba(139,92,246,.60)}
+  html[data-theme="dark"] .qs .num{box-shadow:0 8px 18px -10px rgba(139,92,246,.60)}
   html[data-theme="dark"] .rnd,
   html[data-theme="dark"] .faq,
-  html[data-theme="dark"] .security{background:rgba(14,30,34,.34)}
-  html[data-theme="dark"] table.cmp thead th{background:rgba(14,30,34,.55)}
-  html[data-theme="dark"] table.cmp td.hl{background:rgba(43,227,198,.05)}
-  html[data-theme="dark"] ::selection{background:rgba(43,227,198,.30);color:#EAF6F3}
-  html[data-theme="dark"] .btn-primary,html[data-theme="dark"] .btn-console{text-shadow:none}
+  html[data-theme="dark"] .security{background:rgba(21,18,38,.50)}
+  html[data-theme="dark"] table.cmp thead th{background:rgba(24,21,44,.60)}
+  html[data-theme="dark"] table.cmp td.hl{background:linear-gradient(180deg,rgba(139,92,246,.14),rgba(236,72,153,.08))}
+  html[data-theme="dark"] ::selection{background:rgba(139,92,246,.38);color:#EDEBF5}
+  html[data-theme="dark"] .dot{animation:pulseDark 2.4s infinite}
+  @keyframes pulseDark{0%{box-shadow:0 0 0 0 rgba(52,211,153,.50)}70%{box-shadow:0 0 0 8px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
+  html[data-theme="dark"] .btn-primary,html[data-theme="dark"] .btn-console{text-shadow:0 1px 1px rgba(20,4,18,.35)}
 </style>
 <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
 </head>
@@ -821,6 +859,7 @@
           <div class="chain">
             <div class="conn c1" aria-hidden="true"></div>
             <div class="conn c2" aria-hidden="true"></div>
+            <div class="packets" aria-hidden="true"><i></i><i></i><i></i></div>
 
             <div class="node">
               <span class="ic" aria-hidden="true">
@@ -841,7 +880,7 @@
                 <div class="nlabel">穿云节点 · 加密隧道</div>
                 <div class="naddr">北京2【BGP】· TLS</div>
               </div>
-              <div class="ntag">延迟 11ms<br><span class="ok">● 负载低</span></div>
+              <div class="ntag">延迟 <span class="js-latency">11</span>ms<br><span class="ok">● 负载低</span></div>
             </div>
 
             <div class="node">
@@ -855,6 +894,7 @@
               <div class="ntag">HTTPS<br><span class="ok">● 已签发</span></div>
             </div>
           </div>
+          <div class="lp-traffic" aria-hidden="true"></div>
           <div class="lp-foot">
             <span>frpc&nbsp;0.60.0&nbsp;内核</span>
             <span>心跳 15s · <span class="ok">配置已生效</span></span>
@@ -864,15 +904,23 @@
     </div>
   </section>
 
+  <!-- 关键词跑马灯（onorca 式无缝滚动 · 兼顾 SEO 关键词） -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span class="ticker-grp"><span class="ticker-item">内网穿透</span><span class="ticker-item">端口映射</span><span class="ticker-item">NAT 穿透</span><span class="ticker-item">NAS 远程访问</span><span class="ticker-item">远程桌面</span><span class="ticker-item">SSH 运维</span><span class="ticker-item">内网建站</span><span class="ticker-item">游戏联机</span><span class="ticker-item">frp 替代</span><span class="ticker-item">nps</span><span class="ticker-item">ngrok</span><span class="ticker-item">花生壳</span><span class="ticker-item">飞牛 fnOS</span><span class="ticker-item">群晖 Synology</span><span class="ticker-item">没有公网 IP</span><span class="ticker-item">加密隧道</span></span>
+      <span class="ticker-grp"><span class="ticker-item">内网穿透</span><span class="ticker-item">端口映射</span><span class="ticker-item">NAT 穿透</span><span class="ticker-item">NAS 远程访问</span><span class="ticker-item">远程桌面</span><span class="ticker-item">SSH 运维</span><span class="ticker-item">内网建站</span><span class="ticker-item">游戏联机</span><span class="ticker-item">frp 替代</span><span class="ticker-item">nps</span><span class="ticker-item">ngrok</span><span class="ticker-item">花生壳</span><span class="ticker-item">飞牛 fnOS</span><span class="ticker-item">群晖 Synology</span><span class="ticker-item">没有公网 IP</span><span class="ticker-item">加密隧道</span></span>
+    </div>
+  </div>
+
   <!-- 指标条 -->
   <section class="metrics" aria-label="平台运行指标">
     <div class="wrap">
       <div class="metric-grid reveal">
-        <div class="metric"><div class="v">12<small>+</small></div><div class="k">全国多线节点</div></div>
-        <div class="metric"><div class="v">11<small>ms</small></div><div class="k">最低接入延迟</div></div>
-        <div class="metric"><div class="v">5<small>类</small></div><div class="k">隧道协议支持</div></div>
-        <div class="metric"><div class="v">30<small>s</small></div><div class="k">运行数据刷新</div></div>
-        <div class="metric"><div class="v">24<small>×7</small></div><div class="k">守护自启在线</div></div>
+        <div class="metric"><div class="v"><span class="num" data-count="12">12</span><small>+</small></div><div class="k">全国多线节点</div></div>
+        <div class="metric"><div class="v"><span class="num" data-count="11">11</span><small>ms</small></div><div class="k">最低接入延迟</div></div>
+        <div class="metric"><div class="v"><span class="num" data-count="5">5</span><small>类</small></div><div class="k">隧道协议支持</div></div>
+        <div class="metric"><div class="v"><span class="num" data-count="30">30</span><small>s</small></div><div class="k">运行数据刷新</div></div>
+        <div class="metric"><div class="v"><span class="num" data-count="24">24</span><small>×7</small></div><div class="k">守护自启在线</div></div>
       </div>
     </div>
   </section>
@@ -1389,6 +1437,46 @@
       });
     }, {threshold:.12, rootMargin:'0px 0px -8% 0px'});
     els.forEach(function(el){ io.observe(el); });
+  })();
+</script>
+
+<script>
+  // 动态数据：吞吐 equalizer 条 / live 延迟 / 指标数字滚动
+  (function(){
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // 吞吐 equalizer：注入 28 根条并错峰
+    var tf = document.querySelector('.lp-traffic');
+    if(tf){
+      var html='';
+      for(var i=0;i<28;i++){ html += '<i style="animation-delay:'+(i*0.11).toFixed(2)+'s"></i>'; }
+      tf.innerHTML = html;
+    }
+
+    // live 延迟：9~12ms 轻微跳动（营造实时转发感）
+    var lat = document.querySelector('.js-latency');
+    if(lat && !reduce){
+      setInterval(function(){ lat.textContent = (9 + Math.floor(Math.random()*4)); }, 1400);
+    }
+
+    // 指标 count-up：进入视口从 0 滚动到目标值
+    var nums = document.querySelectorAll('.metric .num');
+    function countUp(el){
+      var target = +el.getAttribute('data-count') || 0, dur = 1200, t0 = null;
+      function step(ts){
+        if(t0===null) t0 = ts;
+        var p = Math.min((ts - t0) / dur, 1);
+        el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+        if(p < 1) requestAnimationFrame(step); else el.textContent = target;
+      }
+      requestAnimationFrame(step);
+    }
+    if(!reduce && 'IntersectionObserver' in window){
+      var mo = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ countUp(e.target); mo.unobserve(e.target); } });
+      }, {threshold:.5});
+      nums.forEach(function(el){ mo.observe(el); });
+    }
   })();
 </script>
 
