@@ -286,6 +286,19 @@
     will-change:transform;
   }
   @keyframes auroraDrift{0%{transform:scale(1) translate3d(0,0,0)}100%{transform:scale(1.08) translate3d(-1.4%,1.2%,0)}}
+  /* 科技点阵纹理层：缓慢漂移、向下渐隐，营造 infra / dev 质感 */
+  body::after{
+    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background-image:radial-gradient(circle, var(--line-2) 1px, transparent 1.4px);
+    background-size:38px 38px;opacity:.55;
+    -webkit-mask:radial-gradient(125% 78% at 50% -12%, #000 0%, transparent 62%);
+    mask:radial-gradient(125% 78% at 50% -12%, #000 0%, transparent 62%);
+    animation:gridDrift 26s linear infinite;will-change:background-position;
+  }
+  @keyframes gridDrift{to{background-position:38px 38px}}
+  /* 链路面板流光描边：@property 角度可动画，不支持时回退静态 */
+  @property --spin{syntax:'<angle>';inherits:false;initial-value:210deg}
+  @keyframes spinBorder{to{--spin:570deg}}
   a{color:inherit;text-decoration:none}
   h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em;line-height:1.12;color:var(--ink)}
   p{margin:0}
@@ -408,11 +421,12 @@
   }
   .link-panel::after{
     content:"";position:absolute;inset:0;border-radius:22px;padding:1px;
-    background:conic-gradient(from 210deg, rgba(180,140,255,.55), rgba(236,72,153,.45), rgba(253,186,178,.42), rgba(125,211,252,.45), rgba(180,140,255,.55));
+    background:conic-gradient(from var(--spin, 210deg), rgba(180,140,255,.55), rgba(236,72,153,.45), rgba(253,186,178,.42), rgba(125,211,252,.45), rgba(180,140,255,.55));
     -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
     mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
     -webkit-mask-composite:xor;mask-composite:exclude;
     pointer-events:none;
+    animation:spinBorder 8s linear infinite;
   }
   .link-panel .lp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;position:relative;z-index:2}
   .lp-title{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--faint)}
@@ -673,6 +687,12 @@
   @keyframes flowBtn{0%,100%{background-position:0% center}50%{background-position:100% center}}
   .link-panel{animation:floatY 8s ease-in-out infinite}
   @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  /* 主 CTA 呼吸光晕 + 眉标语淡入淡出 */
+  .btn-primary{position:relative}
+  .btn-primary::after{content:"";position:absolute;inset:-2px;border-radius:13px;z-index:-1;
+    background:var(--grad-brand);filter:blur(16px);opacity:.42;animation:ctaGlow 3.2s ease-in-out infinite}
+  @keyframes ctaGlow{0%,100%{opacity:.28}50%{opacity:.68}}
+  .rot-tag{display:inline-block;transition:opacity .5s ease}
 
   /* ---------- 响应式 ---------- */
   @media(max-width:1080px){
@@ -771,7 +791,7 @@
   html[data-theme="dark"] .btn-console:hover{box-shadow:0 16px 34px -14px rgba(168,85,247,.90)}
   html[data-theme="dark"] .btn-primary:hover{box-shadow:0 26px 52px -18px rgba(236,72,153,.50),0 12px 28px -12px rgba(168,85,247,.55)}
   html[data-theme="dark"] .link-panel::before{background:linear-gradient(180deg,rgba(167,139,250,.08),rgba(255,255,255,0) 62%)}
-  html[data-theme="dark"] .link-panel::after{background:conic-gradient(from 210deg, rgba(167,139,250,.50), rgba(236,72,153,.42), rgba(99,102,241,.42), rgba(167,139,250,.50))}
+  html[data-theme="dark"] .link-panel::after{background:conic-gradient(from var(--spin,210deg), rgba(167,139,250,.50), rgba(236,72,153,.42), rgba(99,102,241,.42), rgba(167,139,250,.50))}
   html[data-theme="dark"] .node{background:rgba(24,21,42,.55);box-shadow:none}
   html[data-theme="dark"] .node .ic,
   html[data-theme="dark"] .card .cic,
@@ -835,7 +855,7 @@
   <section class="hero">
     <div class="wrap hero-grid">
       <div class="reveal">
-        <span class="eyebrow">自研内网穿透平台 · 兼容 frp 内核</span>
+        <span class="eyebrow"><span class="rot-tag">自研内网穿透平台 · 兼容 frp 内核</span></span>
         <h1>
           <span class="cn">让内网服务<br>安全抵达公网</span>
           <span class="en">CHUANYUN&nbsp;·&nbsp;SECURE&nbsp;TUNNELING</span>
@@ -1486,6 +1506,20 @@
       }, {threshold:.5});
       nums.forEach(function(el){ mo.observe(el); });
     }
+  })();
+</script>
+
+<script>
+  // Hero 眉标语轮播（onorca 式滚动标签）
+  (function(){
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var el = document.querySelector('.rot-tag'); if(!el || reduce) return;
+    var tags = ['自研内网穿透平台 · 兼容 frp 内核','没有公网 IP 也能发布到公网','全国多线节点 · 秒级生效','frp / nps / ngrok / 花生壳 替代方案'];
+    var i = 0;
+    setInterval(function(){
+      el.style.opacity = '0';
+      setTimeout(function(){ i = (i + 1) % tags.length; el.textContent = tags[i]; el.style.opacity = '1'; }, 500);
+    }, 3600);
   })();
 </script>
 
