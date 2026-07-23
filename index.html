@@ -205,7 +205,8 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
 <style>
   :root{
     /* ===== Aurora Frost · 亮色玻璃系统 ===== */
@@ -252,7 +253,11 @@
   }
 
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth;color-scheme:light}
+  html{scroll-behavior:smooth;color-scheme:light;scroll-padding-top:82px}
+  /* 品牌化选中色 + 键盘焦点环（可访问性 & 精致度） */
+  ::selection{background:rgba(139,92,246,.28);color:var(--ink)}
+  a:focus-visible,button:focus-visible,summary:focus-visible,.btn:focus-visible,.btn-console:focus-visible,.btn-skin:focus-visible{outline:2px solid var(--violet-deep);outline-offset:3px;border-radius:12px}
+  a:focus:not(:focus-visible),button:focus:not(:focus-visible){outline:none}
   body{
     margin:0;
     background:var(--bg);
@@ -659,6 +664,12 @@
     .metric:nth-child(n+3){border-top:1px solid var(--line)}
     .foot-top{flex-direction:column}
   }
+  /* 移动端：去掉首屏外玻璃卡的背景模糊，显著回升滚动帧率 */
+  @media(max-width:640px){
+    .card,.feat,.nodecard,.doc-term,.qs,.rpoint,details.qa{backdrop-filter:none;-webkit-backdrop-filter:none}
+  }
+  /* 极窄屏：隐藏链路连接动画，避免与换行后的节点错位 */
+  @media(max-width:360px){ .conn{display:none} }
   @media (prefers-reduced-motion: reduce){
     *{animation:none!important;scroll-behavior:auto!important}
     .reveal{opacity:1;transform:none;transition:none}
@@ -733,7 +744,10 @@
   html[data-theme="dark"] .security{background:rgba(14,30,34,.34)}
   html[data-theme="dark"] table.cmp thead th{background:rgba(14,30,34,.55)}
   html[data-theme="dark"] table.cmp td.hl{background:rgba(43,227,198,.05)}
+  html[data-theme="dark"] ::selection{background:rgba(43,227,198,.30);color:#EAF6F3}
+  html[data-theme="dark"] .btn-primary,html[data-theme="dark"] .btn-console{text-shadow:none}
 </style>
+<noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
 </head>
 <body>
 
