@@ -361,14 +361,17 @@
   .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:54px;align-items:center}
   .hero h1{
     font-family:var(--display);
-    font-size:clamp(42px,6.4vw,76px);
-    letter-spacing:-.02em;margin:22px 0 0;
+    font-size:clamp(32px,4.4vw,56px);
+    letter-spacing:-.02em;margin:20px 0 0;
   }
   .hero h1 .cn{display:block;color:var(--ink)}
   .hero h1 .en{
-    display:block;font-size:.42em;letter-spacing:.18em;font-weight:600;
-    color:var(--violet-deep);margin-top:10px;
+    display:block;font-size:.42em;letter-spacing:.18em;font-weight:600;margin-top:10px;
+    background:linear-gradient(90deg,var(--violet-deep),var(--pink-text),var(--violet-deep));
+    background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:flowText 6s linear infinite;
   }
+  @keyframes flowText{to{background-position:200% center}}
   .hero .lede{
     margin-top:24px;max-width:560px;
     color:var(--muted);font-size:17px;line-height:1.75;
@@ -664,6 +667,12 @@
   .lp-traffic i{flex:1;min-width:0;height:20%;border-radius:2px;transform-origin:bottom;opacity:.55;
     background:linear-gradient(180deg,var(--violet),var(--pink));animation:eq 1.3s ease-in-out infinite alternate}
   @keyframes eq{0%{height:12%;opacity:.35}100%{height:92%;opacity:.82}}
+
+  /* 更多流动效果：主按钮流光 + 隧道面板轻微悬浮 */
+  .btn-primary,.btn-console{background-size:200% auto;animation:flowBtn 5s ease-in-out infinite}
+  @keyframes flowBtn{0%,100%{background-position:0% center}50%{background-position:100% center}}
+  .link-panel{animation:floatY 8s ease-in-out infinite}
+  @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 
   /* ---------- 响应式 ---------- */
   @media(max-width:1080px){
